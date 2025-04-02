@@ -1,0 +1,24 @@
+.register-wrapper {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    width: 30vw;
+    border: 1px solid black;
+    padding: 3%;
+}
+
+.register-form label {
+    margin: 5px 0px;
+}
+
+.register-form input {
+    outline: none;
+    margin: 10px 0px;
+}

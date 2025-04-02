@@ -1,0 +1,47 @@
+.message {
+    display: flex;
+    align-items: center;
+}
+
+.message-content {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 300;
+    font-family: 'Inter';
+    word-break: break-word;
+}
+
+.message-header {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.message-date {
+    font-size: 10px;
+    margin: 0px 7px;
+    color: #A9A9A9;
+}
+
+.message-sender {
+    font-weight: 550;
+    margin-bottom: 0px;
+}
+
+.message-profile-pic-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 70px;
+    margin-top: 20px;
+}
+
+.message-profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.message-content-wrapper {
+    width: 100%;
+}
