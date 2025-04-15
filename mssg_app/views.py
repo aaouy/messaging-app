@@ -5,7 +5,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
 from django.db import IntegrityError
 from django.db.models import Max, F
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.exceptions import ObjectDoesNotExist
@@ -36,6 +36,12 @@ def login_user(request):
         login(request, user)
         return JsonResponse({'username': user.username, 'profile_pic': HOST_PREFIX + user.profile_picture.url})
     return JsonResponse({"error": "Invalid credentials"}, status=400)
+
+@login_required
+@require_POST
+def logout_user(request):
+    logout(request)
+    return HttpResponse("user logged out!")
 
 @login_required
 @require_POST 

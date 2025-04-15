@@ -10,6 +10,7 @@ urlpatterns = [
     path('chatroom/create/', views.create_chatroom),
     path('message/save/', views.save_message),
     path('upload/profile-pic/', views.upload_profile_pic),
+    path('user/logout/', views.logout_user),
 ]
 
 
