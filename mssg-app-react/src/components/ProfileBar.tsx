@@ -2,10 +2,12 @@ import './ProfileBar.css';
 import React, { useEffect, useState } from 'react';
 import { useRef } from 'react';
 import ProfileModal from './ProfileModal';
+import SettingsModal from './SettingsModal';
 import SettingsIcon from "../assets/settings-icon.svg?react";
 
 const ProfileBar = () => {
   const modalRef = useRef<HTMLDialogElement>(null);
+  const settingsModalRef = useRef<HTMLDialogElement>(null);
   const [username, setUsername] = useState<string | null>('');
   const [profilePicture, setProfilePicture] = useState<string>('../assets/default.jpg');
 
@@ -13,6 +15,11 @@ const ProfileBar = () => {
     event.preventDefault();
     modalRef.current?.showModal();
   };
+
+  const handleSettingsClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    settingsModalRef.current?.showModal();
+  }
 
   useEffect(() => {
     const getProfilePicture = async () => {
@@ -38,9 +45,12 @@ const ProfileBar = () => {
           <p>{username}</p>
         </div>
         <div className='profile-tools'>
-          <SettingsIcon className='settings-icon'></SettingsIcon>
+          <button className="settings-button" onClick={handleSettingsClick}>
+            <SettingsIcon className='settings-icon'></SettingsIcon>
+          </button>
         </div>
       </div>
+      <SettingsModal settingsModalRef={settingsModalRef}></SettingsModal>
     </div>
   );
 };
