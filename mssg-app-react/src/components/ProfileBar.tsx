@@ -2,6 +2,7 @@ import './ProfileBar.css';
 import React, { useEffect, useState } from 'react';
 import { useRef } from 'react';
 import ProfileModal from './ProfileModal';
+import SettingsIcon from "../assets/settings-icon.svg?react";
 
 const ProfileBar = () => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -27,13 +28,18 @@ const ProfileBar = () => {
     <div className="profile-bar-wrapper">
       <ProfileModal modalRef={modalRef} setProfilePicture={setProfilePicture} />
       <div className="profile-bar">
-        <img
-          className="profile-pic"
-          onClick={handleProfileClick}
-          src={profilePicture}
-          alt="profile picture"
-        />
-        <p>{username}</p>
+        <div className='profile-details'>
+          <img
+            className="profile-pic"
+            onClick={handleProfileClick}
+            src={profilePicture}
+            alt="profile picture"
+          />
+          <p>{username}</p>
+        </div>
+        <div className='profile-tools'>
+          <SettingsIcon className='settings-icon'></SettingsIcon>
+        </div>
       </div>
     </div>
   );

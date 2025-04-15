@@ -24,13 +24,20 @@
     border-radius: 10px;
 }
 
+.profile-details {
+    display: flex;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+}
+
 .profile-bar p {
     margin: 0;
     font-size: 15px;
 }
 
 .profile-pic {
-    width: 15%;
+    width: 45px;
     border-radius: 50%;
     margin-right: 15px;
     cursor: pointer;
@@ -39,3 +46,22 @@
 .profile-bar img:hover {
     transform: scale(1.1);
 }  
+
+.profile-tools {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    padding: 5px;
+    width: 50%;
+    height: 100%;
+}
+
+.settings-icon {
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+}
+
+.settings-icon:hover {
+    transform: scale(1.1);
+}
