@@ -1,14 +1,14 @@
 import './ProfileBar.css';
 import React, { useEffect, useState } from 'react';
 import { useRef } from 'react';
-import ProfileModal from './ProfileModal';
-import SettingsModal from './SettingsModal';
-import SettingsIcon from "../assets/settings-icon.svg?react";
+import ProfileModal from '../ProfileModal/ProfileModal.tsx';
+import SettingsModal from '../SettingsModal/SettingsModal.tsx';
+import SettingsIcon from "../../assets/settings-icon.svg?react";
 
 const ProfileBar = () => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const settingsModalRef = useRef<HTMLDialogElement>(null);
-  const [username, setUsername] = useState<string | null>('');
+  const [username, setUsername] = useState<string | null>(localStorage.getItem('username'));
   const [profilePicture, setProfilePicture] = useState<string>('../assets/default.jpg');
 
   const handleProfileClick = (event: React.MouseEvent<HTMLImageElement>) => {

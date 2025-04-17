@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LoginProps } from './types';
-import { sendPostRequest } from './utils';
-import { UserLoginResponse } from './types/responses';
+import { LoginProps } from '../types';
+import { sendPostRequest } from '../utils';
+import { UserLoginResponse } from '../types/responses';
 import './Login.css';
 
 const Login = ({ loginEndpoint }: LoginProps) => {

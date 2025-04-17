@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DialogProps } from './types/dialogue';
-import { sendPostRequest } from './utils';
-import { CreateChatRoomResponse } from './types/responses';
-import './Modal.css';
+import { DialogProps } from '../types/dialogue';
+import { sendPostRequest } from '../utils';
+import { CreateChatRoomResponse } from '../types/responses';
+import './AddUserModal.css';
 
 const Modal = ({ chatroomSocket, modal, addChatRoom }: DialogProps) => {
   const [username, setUsername] = useState('');

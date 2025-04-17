@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { ChatInputProps } from './types';
-import { sendPostRequest } from './utils';
+import { ChatInputProps } from '../types';
+import { sendPostRequest } from '../utils';
 import './ChatInput.css';
 
 const ChatInput = ({

@@ -1,6 +1,6 @@
 import './Message.css';
-import { MessageProps } from './types';
-import { detectLinks } from './utils';
+import { MessageProps } from '../types';
+import { detectLinks } from '../utils';
 
 const Message = ({ profilePic, children, sender, sentAt }: MessageProps) => {
   const linkedContent = detectLinks(children);

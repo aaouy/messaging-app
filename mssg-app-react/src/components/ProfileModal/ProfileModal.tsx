@@ -4,9 +4,10 @@ import { Point } from 'react-easy-crop';
 import { useCallback } from 'react';
 import { Area } from 'react-easy-crop';
 import { useState } from 'react';
-import { getCookie } from './utils';
-import { ProfileModalProps } from './types/profileModal';
+import { getCookie } from '../utils';
+import { ProfileModalProps } from '../types/profileModal';
 import './ProfileModal.css';
+
 
 const ProfileModal = ({ modalRef, setProfilePicture }: ProfileModalProps) => {
   const [imgSrc, setImgSrc] = useState<string>('');

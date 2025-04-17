@@ -1,4 +1,5 @@
-export interface UserInterface {
+export interface User{
     id: number;
     username: string;
+    profilePicture: string;
 }

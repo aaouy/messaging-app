@@ -1,7 +1,7 @@
-import ChatWindow from './ChatWindow';
-import ChatRoomList from './ChatRoomList';
-import { useState, useEffect} from 'react';
-import { ChatRoomData } from './types';
+import ChatWindow from '../ChatWindow/ChatWindow';
+import ChatRoomList from '../ChatRoomList/ChatRoomList';
+import { useState, useEffect } from 'react';
+import { ChatRoomData } from '../types';
 import './ChatPage.css';
 
 const ChatPage = () => {

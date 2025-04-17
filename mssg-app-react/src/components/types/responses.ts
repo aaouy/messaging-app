@@ -1,12 +1,13 @@
-import { UserInterface } from "./user";
+import { User } from "./user";
 
 export interface CreateChatRoomResponse {
     chatroom_id: string;
     profile_pic: string;
-    user: UserInterface;
+    user: User;
 }
 
 export interface UserLoginResponse {
+    id: number;
     username: string;
     profile_pic: string;
 }

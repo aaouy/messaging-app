@@ -1,12 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ChatPage from './components/ChatPage';
-import Login from './components/Login';
-import Register from './components/Register';
-import 'react-image-crop/dist/ReactCrop.css';
+import ChatPage from './components/ChatPage/ChatPage';
+import Login from './components/Login/Login';
+import Register from './components/Register/Register';
 
 function App() {
   return (
-    <Router>
+      <Router>
       <Routes>
         <Route
           path="/register"
@@ -20,6 +19,7 @@ function App() {
         <Route path="/message/:chatroom_id" element={<ChatPage />}></Route>
       </Routes>
     </Router>
+
   );
 }
 
