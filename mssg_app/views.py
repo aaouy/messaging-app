@@ -34,7 +34,7 @@ def login_user(request):
     user = authenticate(request, username=data["username"], password=data["password"])
     if user:
         login(request, user)
-        return JsonResponse({'username': user.username, 'profile_pic': HOST_PREFIX + user.profile_picture.url})
+        return JsonResponse({'id': user.id, 'username': user.username, 'profile_pic': HOST_PREFIX + user.profile_picture.url})
     return JsonResponse({"error": "Invalid credentials"}, status=400)
 
 @login_required
