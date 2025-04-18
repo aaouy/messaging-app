@@ -2,7 +2,6 @@ import ChatWindow from '../ChatWindow/ChatWindow';
 import ChatRoomList from '../ChatRoomList/ChatRoomList';
 import { useState, useEffect } from 'react';
 import { ChatRoomInterface } from '../types';
-import './ChatPage.css';
 
 const ChatPage = () => {
   const [chatrooms, setChatrooms] = useState<ChatRoomInterface[]>([]);
@@ -19,7 +18,7 @@ const ChatPage = () => {
   }, [])
 
   return (
-    <div className="chat-page">
+    <div className="flex">
       <ChatRoomList notificationSocket={notificationSocket} chatrooms={chatrooms} setChatrooms={setChatrooms}/>
       <ChatWindow notificationSocket={notificationSocket} chatrooms={chatrooms} setChatrooms={setChatrooms} />
     </div>
