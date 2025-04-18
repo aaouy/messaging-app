@@ -7,7 +7,6 @@ import axios from 'axios';
 import ChatRoom from '../ChatRoom/ChatRoom.tsx';
 import ProfileBar from '../ProfileBar/ProfileBar.tsx';
 import NewMessageIcon from '../../assets/new-message-icon.svg?react';
-import './ChatRoomList.css';
 
 const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomListProps) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -122,17 +121,17 @@ const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomL
   };
 
   return (
-    <div className="chatrooms-wrapper">
-      <div className="chatrooms-header">
-        <h1 className="chatrooms-title">Messages</h1>
+    <div className="w-[20vw] bg-[#282b30]">
+      <div className="flex p-3 justify-between">
+        <h1 className="text-[#dcdcdc] text-[24px]">Messages</h1>
         <button className="new-message-button" onClick={handleAddFriend}>
-          <NewMessageIcon className="new-message-icon"></NewMessageIcon>
+          <NewMessageIcon className="w-7 h-7 cursor-pointer hover:scale-[1.1]"></NewMessageIcon>
         </button>
       </div>
-      <dialog className="add-user-modal" ref={modalRef} onClick={closeModal}>
+      <dialog ref={modalRef} onClick={closeModal}>
         <Modal chatroomSocket={chatroomSocket} addChatRoom={addChatRoom} modal={modalRef} />
       </dialog>
-      <div className="chatrooms">
+      <div className="overflow-scroll p-1 h-[80vh]">
         {chatrooms.map((chatRoom, index) => (
           <ChatRoom
             ref={index === chatrooms.length - 1 ? lastChatRoomRef : null}
