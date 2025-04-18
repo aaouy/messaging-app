@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ChatInputProps } from '../types';
 import { sendPostRequest } from '../utils';
-import './ChatInput.css';
 
 const ChatInput = ({
   notificationSocket,
@@ -48,10 +47,10 @@ const ChatInput = ({
     }
   };
   return (
-    <div className="bottom-bar">
+    <div className="w-full h-[10vh] flex flex-col justify-center p-5 bg-[#424549] rounded-md">
       <form className="chat-message-form" onSubmit={handleMessageSubmit}>
         <input
-          className="chat-input"
+          className="w-full text-[#dcdcdc] outline-none"
           value={message}
           onChange={updateInput}
           type="text"
