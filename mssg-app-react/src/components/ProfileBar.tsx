@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRef } from 'react';
 import ProfileModal from './ProfileModal.tsx';
 import SettingsModal from './SettingsModal.tsx';
-import SettingsIcon from "../../assets/settings-icon.svg?react";
+import SettingsIcon from "../assets/settings-icon.svg?react";
 
 const ProfileBar = () => {
   const modalRef = useRef<HTMLDialogElement>(null);

@@ -6,7 +6,7 @@ import Modal from './AddUserModal.tsx';
 import axios from 'axios';
 import ChatRoom from './ChatRoom.tsx';
 import ProfileBar from './ProfileBar.tsx';
-import NewMessageIcon from '../../assets/new-message-icon.svg?react';
+import NewMessageIcon from '../assets/new-message-icon.svg?react';
 
 const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomListProps) => {
   const modalRef = useRef<HTMLDialogElement>(null);

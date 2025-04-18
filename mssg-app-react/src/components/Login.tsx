@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { LoginProps } from './types';
 import { sendPostRequest } from './utils';
 import { UserLoginResponse } from './types/responses';
-import './Login.css';
 
 const Login = ({ loginEndpoint }: LoginProps) => {
   const [username, setUsername] = useState('');
