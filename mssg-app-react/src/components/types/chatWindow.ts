@@ -1,7 +1,7 @@
-import { ChatRoomData } from "./chatroom";
+import { ChatRoomInterface } from "./chatroom";
 
 export interface ChatWindowProps {
-  chatrooms: ChatRoomData[];
-  setChatrooms: React.Dispatch<React.SetStateAction<ChatRoomData[]>>;
+  chatrooms: ChatRoomInterface[];
+  setChatrooms: React.Dispatch<React.SetStateAction<ChatRoomInterface[]>>;
   notificationSocket: WebSocket | null;
 }
