@@ -28,12 +28,13 @@
 }
 
 .chatrooms {
-    height: 88vh;
+    height: 83vh;
     width: 100%;
     padding: 7px;
     font-family: 'Inter';
     background-color: #282b30;
     overflow: scroll;
+    scrollbar-width: thin;
 }
 
 .chatrooms-title {
