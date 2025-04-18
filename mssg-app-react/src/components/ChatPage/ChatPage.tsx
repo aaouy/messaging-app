@@ -1,11 +1,11 @@
 import ChatWindow from '../ChatWindow/ChatWindow';
 import ChatRoomList from '../ChatRoomList/ChatRoomList';
 import { useState, useEffect } from 'react';
-import { ChatRoomData } from '../types';
+import { ChatRoomInterface } from '../types';
 import './ChatPage.css';
 
 const ChatPage = () => {
-  const [chatrooms, setChatrooms] = useState<ChatRoomData[]>([]);
+  const [chatrooms, setChatrooms] = useState<ChatRoomInterface[]>([]);
   const [notificationSocket, setNotificationSocket] = useState<WebSocket | null>(null); 
   const username = localStorage.getItem('username');
 
