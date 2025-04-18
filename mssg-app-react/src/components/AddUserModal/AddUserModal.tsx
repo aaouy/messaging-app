@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { DialogProps } from '../types/dialogue';
 import { sendPostRequest } from '../utils';
 import { CreateChatRoomResponse } from '../types/responses';
-import './AddUserModal.css';
 
 const Modal = ({ chatroomSocket, modal, addChatRoom }: DialogProps) => {
   const [username, setUsername] = useState('');
@@ -42,15 +41,13 @@ const Modal = ({ chatroomSocket, modal, addChatRoom }: DialogProps) => {
     }
   };
   return (
-    <div className="add-user-modal-wrapper">
-      <div className="add-user-header">
-        <h2 className="add-user-title">New Message</h2>
-      </div>
-      <div className='add-user-form-wrapper'>
-        <form className="add-user-form" onSubmit={handleSubmit}>
-          <input id="add-user-input" onChange={updateUser} type="text" value={username} placeholder='Add a user...'/>
-          <div className='add-user-error'>{error && <p>User was not found.</p>}</div>
-          <input type="submit" />
+    <div className="w-[30vw] h-[30vh] flex flex-col p-3">
+        <h2 className="grow text-lg text-white text-center">New Message</h2>
+      <div className='flex grow-2'>
+        <form className="w-full flex flex-col justify-evenly items-center text-white" onSubmit={handleSubmit}>
+          <input className="text-white bg-[#424549] p-1 outline-none" onChange={updateUser} type="text" value={username} placeholder='Add a user...'/>
+          <div className='text-[red] text-sm h-5'>{error && <p>User was not found</p>}</div>
+          <input className="w-20 bg-[#7289da] text-sm hover:cursor-pointer hover:bg-[#5b6dae]" type="submit" />
         </form>
       </div>
     </div>
