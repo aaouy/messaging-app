@@ -1,5 +1,4 @@
 import { settingsModalProps } from "../types/settingsModal"
-import "./SettingsModal.css";
 import { useNavigate } from "react-router-dom";
 import { sendPostRequest } from "../utils";
 
@@ -22,10 +21,10 @@ const SettingsModal = ({settingsModalRef} : settingsModalProps) => {
   }
 
   return (
-    <dialog ref={settingsModalRef} onClick={closeModal} className="settings-modal">
-      <div className="inner-settings-modal">
-        <ul className="setting-options">
-          <li onClick={handleLogout} className="logout-li">
+    <dialog ref={settingsModalRef} onClick={closeModal} className="w-[25vw] h-[50vh]">
+      <div className="flex w-full h-full bg-[#282b30] flex-col">
+        <ul className="list-none w-full h-full">
+          <li onClick={handleLogout} className="cursor-pointer flex h-1/8 items-center justify-center text-white border-b-[0.5px]">
             Logout
           </li>
         </ul>

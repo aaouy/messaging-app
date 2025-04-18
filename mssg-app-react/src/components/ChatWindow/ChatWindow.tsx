@@ -2,7 +2,6 @@ import ChatInput from '../ChatInput/ChatInput';
 import MessageList from '../MessageList/MessageList';
 import { ChatWindowProps } from '../types';
 import { useEffect, useState } from 'react';
-import './ChatWindow.css';
 import { useParams } from 'react-router-dom';
 
 const ChatWindow = ({
@@ -26,9 +25,9 @@ const ChatWindow = ({
     };
   }, [chatroom_id]);
 
-  if (!chatroom_id) return <div className="chat-window"></div>;
+  if (!chatroom_id) return <div className="w-[80vw] h-[90vh]"></div>;
   return (
-    <div className="chat-window">
+    <div className="w-[80vw] h-[90vh]">
       <MessageList messageSocket={messageSocket} />
       <ChatInput
         notificationSocket={notificationSocket}

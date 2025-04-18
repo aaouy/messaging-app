@@ -6,7 +6,6 @@ import { Area } from 'react-easy-crop';
 import { useState } from 'react';
 import { getCookie } from '../utils';
 import { ProfileModalProps } from '../types/profileModal';
-import './ProfileModal.css';
 
 
 const ProfileModal = ({ modalRef, setProfilePicture }: ProfileModalProps) => {
@@ -115,12 +114,12 @@ const ProfileModal = ({ modalRef, setProfilePicture }: ProfileModalProps) => {
   };
 
   return (
-    <dialog className="upload-pfp-modal" ref={modalRef} onClick={closeModal}>
-      <div className="modal-inner">
-        <div className="upload-pfp-form-wrapper">
-          <h3>Edit Image</h3>
-          <form className="upload-pfp-form">
-            <label className="pgp-img-label" htmlFor="pfp-img-input">
+    <dialog className="w-[50vw] h-[80vh]" ref={modalRef} onClick={closeModal}>
+      <div className="flex flex-col pl-[2%] p-[2%] bg-[#424549] w-full h-full">
+        <div className="flex w-1/3 h-[10%] justify-evenly items-center">
+          <h3 className='text-white w-1/2'>Edit Image</h3>
+          <form className="flex items-center justify-between ">
+            <label className="p-1 pl-3 pr-3 rounded-sm bg-[#7289da] cursor-pointer text-white inline-block" htmlFor="pfp-img-input">
               Upload
             </label>
             <input
@@ -129,11 +128,11 @@ const ProfileModal = ({ modalRef, setProfilePicture }: ProfileModalProps) => {
               accept="image/*"
               onChange={onSelectFile}
               onBlur={handleBlur}
+              hidden
             />
           </form>
         </div>
-        <div className="upload-pfp-img-wrapper">
-          <div className="img-crop-wrapper">
+        <div className="bg-[#36393e] w-full h-full relative">
             {imgSrc && (
               <Cropper
                 image={imgSrc}
@@ -147,12 +146,11 @@ const ProfileModal = ({ modalRef, setProfilePicture }: ProfileModalProps) => {
                 onZoomChange={onZoomChange}
               ></Cropper>
             )}
-          </div>
         </div>
-        <div className="zoom-slider-container">
+        <div className="flex justify-center items-center h-1/10 w-full">
           {imgSrc && (
             <input
-              className="zoom-slider"
+              className="w-1/2 rounded-[50%]"
               type="range"
               min={1}
               max={3}
@@ -162,12 +160,12 @@ const ProfileModal = ({ modalRef, setProfilePicture }: ProfileModalProps) => {
             />
           )}
         </div>
-        <div className="edit-pfp-options-wrapper">
-          <div className="edit-pfp-options">
-            <button className="cancel-pfp-button" onClick={handleCloseButton}>
+        <div className="flex items-center w-full justify-end">
+          <div className="flex w-1/4 items-center justify-between">
+            <button className="cursor-pointer text-white" onClick={handleCloseButton}>
               Cancel
             </button>
-            <button onClick={handleApply} className="apply-pfp-button">
+            <button onClick={handleApply} className="bg-[#7289da] p-2 pl-4 pr-4 text-white cursor-pointer">
               Apply
             </button>
           </div>

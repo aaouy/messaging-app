@@ -18,7 +18,7 @@ const ChatPage = () => {
   }, [])
 
   return (
-    <div className="flex">
+    <div className="flex h-full">
       <ChatRoomList notificationSocket={notificationSocket} chatrooms={chatrooms} setChatrooms={setChatrooms}/>
       <ChatWindow notificationSocket={notificationSocket} chatrooms={chatrooms} setChatrooms={setChatrooms} />
     </div>

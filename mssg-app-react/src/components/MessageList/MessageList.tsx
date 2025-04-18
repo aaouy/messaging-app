@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { MessageData, MessageListProps } from '../types';
 import Message from '../Message/Message';
 import axios from 'axios';
-import './MessageList.css';
 import { useParams } from 'react-router-dom';
 
 const MessageList = ({ messageSocket }: MessageListProps) => {
@@ -112,12 +111,11 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
   );
 
   return (
-    <div className="message-list">
+    <div className="flex flex-col-reverse overflow-scroll h-full pr-[100px] pb-5 pt-5">
       {isLoading && <p>Loading...</p>}
       {messages.map((message, index) => (
         <div
           ref={index === messages.length - 1 ? handlePagination : null}
-          className="message-wrapper"
           key={index}
           >
           <Message sentAt={message.sent_at} profilePic={message.profilePic} sender={message.sender}>

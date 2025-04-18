@@ -1,4 +1,3 @@
-import './ProfileBar.css';
 import React, { useEffect, useState } from 'react';
 import { useRef } from 'react';
 import ProfileModal from '../ProfileModal/ProfileModal.tsx';
@@ -32,21 +31,21 @@ const ProfileBar = () => {
   }, []);
 
   return (
-    <div className="profile-bar-wrapper">
+    <div className="flex items-center w-full h-[10vh] bg-inherit p-2 pt-0">
       <ProfileModal modalRef={modalRef} setProfilePicture={setProfilePicture} />
-      <div className="profile-bar">
-        <div className='profile-details'>
+      <div className="flex bg-[#424549] h-full w-full rounded-lg items-center p-3">
+        <div className='flex items-center h-full w-1/3 justify-between'>
           <img
-            className="profile-pic"
+            className="w-[45px] h-[45px] rounded-[50%] cursor-pointer hover:scale-[1.1]"
             onClick={handleProfileClick}
             src={profilePicture}
             alt="profile picture"
           />
-          <p>{username}</p>
+          <p className='text-white'>{username}</p>
         </div>
-        <div className='profile-tools'>
-          <button className="settings-button" onClick={handleSettingsClick}>
-            <SettingsIcon className='settings-icon'></SettingsIcon>
+        <div className='flex w-2/3 justify-end'>
+          <button className="w-[30px] h-[30px] rounded-[50%] cursor-pointer hover:scale-[1.1]" onClick={handleSettingsClick}>
+            <SettingsIcon className='w-[30px] h-[30px]'></SettingsIcon>
           </button>
         </div>
       </div>
