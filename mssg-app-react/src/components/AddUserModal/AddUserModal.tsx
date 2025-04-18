@@ -20,7 +20,7 @@ const Modal = ({ chatroomSocket, modal, addChatRoom }: DialogProps) => {
     try {
       const data = await sendPostRequest<CreateChatRoomResponse>(createChatRoomEndpoint, { name: username });
       const newChatRoom = {
-        user: {'id': data.user.id, 'username': data.user.username},
+        user: {'id': data.user.id, 'username': data.user.username, 'profilePicture': data.profile_pic},
         chatroom_id: data.chatroom_id,
         profile_pic: data.profile_pic,
         unread_messages: 0
