@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RegisterProps } from '../types/register';
-import { sendPostRequest } from '../utils';
+import { RegisterProps } from './types/register';
+import { sendPostRequest } from './utils';
 import axios from 'axios';
 
 const Register = ({ registerEndpoint }: RegisterProps) => {

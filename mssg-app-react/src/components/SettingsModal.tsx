@@ -1,6 +1,6 @@
-import { settingsModalProps } from "../types/settingsModal"
+import { settingsModalProps } from "./types/settingsModal"
 import { useNavigate } from "react-router-dom";
-import { sendPostRequest } from "../utils";
+import { sendPostRequest } from "./utils";
 
 const SettingsModal = ({settingsModalRef} : settingsModalProps) => {
   const navigate = useNavigate();

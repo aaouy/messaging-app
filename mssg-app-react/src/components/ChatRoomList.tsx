@@ -1,11 +1,11 @@
-import { ChatRoomInterface } from '../types';
-import { ChatroomListProps } from '../types';
+import { ChatRoomInterface } from './types/index.ts';
+import { ChatroomListProps } from './types/index.ts';
 import { useParams } from 'react-router-dom';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import Modal from '../AddUserModal/AddUserModal.tsx';
+import Modal from './AddUserModal.tsx';
 import axios from 'axios';
-import ChatRoom from '../ChatRoom/ChatRoom.tsx';
-import ProfileBar from '../ProfileBar/ProfileBar.tsx';
+import ChatRoom from './ChatRoom.tsx';
+import ProfileBar from './ProfileBar.tsx';
 import NewMessageIcon from '../../assets/new-message-icon.svg?react';
 
 const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomListProps) => {

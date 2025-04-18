@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRef } from 'react';
-import ProfileModal from '../ProfileModal/ProfileModal.tsx';
-import SettingsModal from '../SettingsModal/SettingsModal.tsx';
+import ProfileModal from './ProfileModal.tsx';
+import SettingsModal from './SettingsModal.tsx';
 import SettingsIcon from "../../assets/settings-icon.svg?react";
 
 const ProfileBar = () => {

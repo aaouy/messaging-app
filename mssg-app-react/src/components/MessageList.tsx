@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MessageData, MessageListProps } from '../types';
-import Message from '../Message/Message';
+import { MessageData, MessageListProps } from './types';
+import Message from './Message';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
