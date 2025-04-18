@@ -1,4 +1,4 @@
-import { ChatRoomData } from '../types';
+import { ChatRoomInterface } from '../types';
 import { ChatroomListProps } from '../types';
 import { useParams } from 'react-router-dom';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
@@ -19,7 +19,7 @@ const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomL
   const [chatroomSocket, setChatroomSocket] = useState<WebSocket | null>(null);
   const username = localStorage.getItem('username');
 
-  const addChatRoom = (newChatRoom: ChatRoomData) => {
+  const addChatRoom = (newChatRoom: ChatRoomInterface) => {
     setChatrooms((chatRooms) => [newChatRoom, ...chatRooms]);
   };
 
@@ -59,8 +59,8 @@ const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomL
     };
     newChatroomSocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      const chatroom : ChatRoomData = {
-        'user': {'id': data.sender_id, 'username': data.sender},
+      const chatroom : ChatRoomInterface = {
+        'user': {'id': data.sender_id, 'username': data.sender, 'profilePicture': data.profile_pic},
         'chatroom_id': data.chatroom_id,
         'profile_pic': data.profile_pic,
         'unread_messages': 1,
@@ -78,7 +78,7 @@ const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomL
       const response = await axios.get(chatroomEndpoint, {
         withCredentials: true,
       });
-      response.data.chatrooms.forEach((chatroom: ChatRoomData) => {
+      response.data.chatrooms.forEach((chatroom: ChatRoomInterface) => {
         setChatrooms((chatRooms) => [...chatRooms, chatroom]);
         currentPageRef.current = response.data.current_page;
         hasNextRef.current = response.data.has_next;
