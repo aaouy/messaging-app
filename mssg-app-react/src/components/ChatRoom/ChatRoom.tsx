@@ -1,6 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChatRoomProps } from '../types';
-import './ChatRoom.css';
 
 const ChatRoom = ({
   unreadMessages,
@@ -23,17 +22,14 @@ const ChatRoom = ({
     <div
       ref={ref}
       onClick={onClickHandler}
-      className={`chatroom chatroom-${chatroom_id === chatroomId ? 'active' : ''}`}
+      className={`${chatroom_id === chatroomId ? "bg-[#40444b]": ""} flex items-center h-[10vh] cursor-pointer hover:bg-[#40444b] p-2 text-[#d3d3d3] rounded-lg mb-[5px]`}
     >
-      <div className="chatroom-pfp">
-        <img src={profilePic} alt="profile-pic" />
+      <div className="w-[40px] h-[40px]">
+        <img className="rounded-[50%]" src={profilePic} alt="profile-pic" />
       </div>
       <div
-        style={{
-          visibility: unreadMessages > 0 && chatroom_id !== chatroomId ? 'visible' : 'hidden',
-        }}
-        className="unread-mssgs-wrapper"
-      >
+        className={`${unreadMessages > 0 && chatroom_id !== chatroomId ? 'visible' : 'invisible'}`}
+      > ̰
         {unreadMessages}
       </div>
       <h3>{chatRoomName}</h3>
