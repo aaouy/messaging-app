@@ -16,7 +16,7 @@ function App() {
           element={<Login loginEndpoint="http://localhost:8000/user/login/" />}
         ></Route>
         <Route path="/message" element={<ChatPage />}></Route>
-        <Route path="/message/:chatroom_id" element={<ChatPage />}></Route>
+        <Route path="/message/:currentSelectedChatRoom" element={<ChatPage />}></Route>
       </Routes>
     </Router>
 
