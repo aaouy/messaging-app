@@ -8,7 +8,7 @@ export interface MessageProps {
 export interface MessageData {
   sender?: string;
   message: string;
-  profilePic?: string;
+  profile_pic?: string;
   sent_at?: string | null;
 }
 

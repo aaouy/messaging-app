@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DialogProps } from './types/dialogue';
+import { DialogProps, CreateChatRoomResponse } from './types/index';
 import { sendPostRequest } from './utils';
-import { CreateChatRoomResponse } from './types/responses';
 
-const AddUserModal = ({ chatroomSocket, modal, addChatRoom }: DialogProps) => {
+const AddUserModal = ({ chatroomSocket, modalRef, addChatRoom }: DialogProps) => {
   const [username, setUsername] = useState('');
   const [error, setError] = useState(false);
   const navigate = useNavigate();
@@ -19,10 +18,10 @@ const AddUserModal = ({ chatroomSocket, modal, addChatRoom }: DialogProps) => {
     try {
       const data = await sendPostRequest<CreateChatRoomResponse>(createChatRoomEndpoint, { name: username });
       const newChatRoom = {
-        user: {'id': data.user.id, 'username': data.user.username, 'profilePicture': data.profile_pic},
-        chatroom_id: data.chatroom_id,
-        profile_pic: data.profile_pic,
-        unread_messages: 0
+        'user': {'id': data.user.id, 'username': data.user.username, 'profilePicture': data.profile_pic},
+        'chat_room_id': data.chatroom_id,
+        'profile_pic': data.profile_pic,
+        'num_unread_mssgs': 0
       };
       console.log(chatroomSocket)
       chatroomSocket?.send(JSON.stringify({
@@ -33,7 +32,7 @@ const AddUserModal = ({ chatroomSocket, modal, addChatRoom }: DialogProps) => {
       setUsername('');
       navigate(`/message/${data.chatroom_id}`);
       addChatRoom(newChatRoom);
-      modal.current?.close();
+      modalRef.current?.close();
     } catch (error: any) {
       const response = error.response;
       console.error(response.data.error);
@@ -42,13 +41,13 @@ const AddUserModal = ({ chatroomSocket, modal, addChatRoom }: DialogProps) => {
   };
 
   const closeModal = (event: React.MouseEvent<HTMLDialogElement>) => {
-    if (event.target === modal.current) {
-      modal.current?.close();
+    if (event.target === modalRef.current) {
+      modalRef.current?.close();
     }
   };
 
   return (
-    <dialog className="border-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" ref={modal} onClick={closeModal}>
+    <dialog className="border-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" ref={modalRef} onClick={closeModal}>
       <div className="w-[30vw] h-[30vh] flex flex-col p-3 bg-[#282b30]">
           <h2 className="grow text-lg text-white text-center">New Message</h2>
         <div className='flex grow-2'>

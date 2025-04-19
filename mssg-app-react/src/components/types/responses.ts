@@ -1,21 +1,18 @@
 import { User } from "./user";
 
 export interface CreateChatRoomResponse {
-    chatroom_id: string;
-    profile_pic: string;
     user: User;
+    chatroom_id: string;
 }
 
 export interface UserLoginResponse {
-    id: number;
-    username: string;
-    profile_pic: string;
+    user: User;
 }
 
 export interface GetMessagesResponse {
     messages: string;
-    hasNext: string;
-    hasPrev: string;
-    totalPages: string;
-    currentPage: string;
+    has_next: string;
+    has_prev: string;
+    total_pages: string;
+    current_page: string;
 }

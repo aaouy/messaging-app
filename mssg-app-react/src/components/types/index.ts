@@ -3,7 +3,7 @@ export * from "./chatInput";
 export * from "./chatWindow";
 export * from "./login";
 export * from "./message";
-export * from "./dialogue";
+export * from "./addUserModal";
 export * from "./profileModal";
 export * from "./register";
 export * from "./responses";

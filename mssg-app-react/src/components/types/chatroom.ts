@@ -2,22 +2,22 @@ import { User } from "./user";
 
 export interface ChatRoomProps {
   chatRoomName: string;
-  chatroomId: string;
+  chatRoomId: string;
   profilePic: string;
   handleActiveId: (id: string) => void;
   ref: ((node:HTMLDivElement) => void) | null;
-  unreadMessages: number;
+  numUnreadMssgs: number;
 }
 
 export interface ChatroomListProps {
-  chatrooms: ChatRoomInterface[];
-  setChatrooms: React.Dispatch<React.SetStateAction<ChatRoomInterface[]>>;
+  chatRooms: ChatRoomInterface[];
+  setChatRooms: React.Dispatch<React.SetStateAction<ChatRoomInterface[]>>;
   notificationSocket: WebSocket | null;
 }
 
 export interface ChatRoomInterface {
     user: User;
-    chatroom_id: string;
+    chat_room_id: string;
     profile_pic: string;
-    unread_messages: number;
+    num_unread_mssgs: number;
   }
