@@ -40,17 +40,27 @@ const Modal = ({ chatroomSocket, modal, addChatRoom }: DialogProps) => {
       setError(true);
     }
   };
+
+  const closeModal = (event: React.MouseEvent<HTMLDialogElement>) => {
+    if (event.target === modal.current) {
+      modal.current?.close();
+    }
+  };
+  
   return (
-    <div className="w-[30vw] h-[30vh] flex flex-col p-3 bg-[#282b30]">
-        <h2 className="grow text-lg text-white text-center">New Message</h2>
-      <div className='flex grow-2'>
-        <form className="w-full flex flex-col justify-evenly items-center text-white" onSubmit={handleSubmit}>
-          <input className="text-white bg-[#424549] p-1 outline-none rounded-lg" onChange={updateUser} type="text" value={username} placeholder='Add a user...'/>
-          <div className='text-[red] text-sm h-5'>{error && <p>User was not found</p>}</div>
-          <input className="w-20 bg-[#7289da] text-sm hover:cursor-pointer hover:bg-[#5b6dae] rounded-lg" type="submit" />
-        </form>
+    <dialog className="border-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" ref={modal} onClick={closeModal}>
+      <div className="w-[30vw] h-[30vh] flex flex-col p-3 bg-[#282b30]">
+          <h2 className="grow text-lg text-white text-center">New Message</h2>
+        <div className='flex grow-2'>
+          <form className="w-full flex flex-col justify-evenly items-center text-white" onSubmit={handleSubmit}>
+            <input className="text-white bg-[#424549] p-1 outline-none rounded-lg" onChange={updateUser} type="text" value={username} placeholder='Add a user...'/>
+            <div className='text-[red] text-sm h-5'>{error && <p>User was not found</p>}</div>
+            <input className="w-20 bg-[#7289da] text-sm hover:cursor-pointer hover:bg-[#5b6dae] rounded-lg" type="submit" />
+          </form>
+        </div>
       </div>
-    </div>
+    </dialog>
+   
   );
 };
 

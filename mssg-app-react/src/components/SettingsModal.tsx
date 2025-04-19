@@ -21,7 +21,7 @@ const SettingsModal = ({settingsModalRef} : settingsModalProps) => {
   }
 
   return (
-    <dialog ref={settingsModalRef} onClick={closeModal} className="w-[25vw] h-[50vh]">
+    <dialog ref={settingsModalRef} onClick={closeModal} className="w-[25vw] h-[50vh] fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       <div className="flex w-full h-full bg-[#282b30] flex-col">
         <ul className="list-none w-full h-full">
           <li onClick={handleLogout} className="cursor-pointer flex h-1/8 items-center justify-center text-white border-b-[0.5px]">

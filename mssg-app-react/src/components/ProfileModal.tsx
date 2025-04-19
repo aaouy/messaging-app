@@ -114,7 +114,7 @@ const ProfileModal = ({ modalRef, setProfilePicture }: ProfileModalProps) => {
   };
 
   return (
-    <dialog className="w-[50vw] h-[80vh]" ref={modalRef} onClick={closeModal}>
+    <dialog className="w-[50vw] h-[80vh] border-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" ref={modalRef} onClick={closeModal}>
       <div className="flex flex-col pl-[2%] p-[2%] bg-[#424549] w-full h-full">
         <div className="flex w-1/3 h-[10%] justify-evenly items-center">
           <h3 className='text-white w-1/2'>Edit Image</h3>

@@ -114,23 +114,15 @@ const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomL
     );
   };
 
-  const closeModal = (event: React.MouseEvent<HTMLDialogElement>) => {
-    if (event.target === modalRef.current) {
-      modalRef.current?.close();
-    }
-  };
-
   return (
     <div className="w-[20vw] bg-[#282b30]">
       <div className="flex p-3 h-[8vh] justify-between">
         <h1 className="text-[#dcdcdc] text-[24px]">Messages</h1>
-        <button className="new-message-button" onClick={handleAddFriend}>
+        <button onClick={handleAddFriend}>
           <NewMessageIcon className="w-7 h-7 cursor-pointer hover:scale-[1.1]"></NewMessageIcon>
         </button>
       </div>
-      <dialog ref={modalRef} onClick={closeModal}>
-        <Modal chatroomSocket={chatroomSocket} addChatRoom={addChatRoom} modal={modalRef} />
-      </dialog>
+      <Modal chatroomSocket={chatroomSocket} addChatRoom={addChatRoom} modal={modalRef} />
       <div className="overflow-scroll p-1 h-[82vh]">
         {chatrooms.map((chatRoom, index) => (
           <ChatRoom
