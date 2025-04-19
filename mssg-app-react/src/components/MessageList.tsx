@@ -1,33 +1,42 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MessageData, MessageListProps } from './types';
+import { MessageInterface, MessageListProps, User } from './types';
 import Message from './Message';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
 const MessageList = ({ messageSocket }: MessageListProps) => {
-  const [messages, setMessages] = useState<MessageData[]>([]);
+  const [messages, setMessages] = useState<MessageInterface[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const hasNextPageRef= useRef<boolean>(true);
   const [page, setPage] = useState<number>(1);
   const observer = useRef<IntersectionObserver | null>(null);
-  const { chatroom_id } = useParams();
+  const { currentSelectedChatRoom } = useParams();
 
   useEffect(() => {
     setMessages([]);
     getMessages(1);
-  }, [chatroom_id]);
+  }, [currentSelectedChatRoom]);
 
   useEffect(() => {
     if (!messageSocket) return;
     messageSocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      let sender = undefined;
+      if (data.sender) {
+        sender = {
+          id: data.sender.id,
+          username: data.sender.username,
+          profilePicture: data.sender.profile_picture
+        }
+        console.log(sender);
+      }
       const newMessage = {
-        sender: data.sender,
-        message: data.message,
-        profilePic: data.profile_pic,
-        sent_at: handleDate(data.sent_at),
+        sender: sender,
+        content: data.content,
+        sentAt: handleDate(data.sent_at),
+        chatRoomId: currentSelectedChatRoom
       };
-      setMessages((items) => [newMessage, ...items]);
+      setMessages((messages) => [newMessage, ...messages]);
     };
     return () => {
       messageSocket.onmessage = null;
@@ -65,7 +74,7 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
   };
 
   const getMessages = async (page: number) => {
-    const getMessagesEndpoint = `http://localhost:8000/messages/${chatroom_id}/${page}/`;
+    const getMessagesEndpoint = `http://localhost:8000/messages/${currentSelectedChatRoom}/${page}/`;
     try {
       const response = await axios.get(getMessagesEndpoint, {
         withCredentials: true,
@@ -73,13 +82,18 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
       
       const messages = response.data.messages // newest mssgs at the front.
       for (let i = 0; i < messages.length; i++) {
-        let newMessage: MessageData = {message: messages[i].content};
-        if (i === messages.length - 1 || (messages[i].sender != messages[i + 1].sender || (new Date(messages[i].sent_at).getTime() - new Date(messages[i + 1].sent_at).getTime()) >= 60 * 1000)) {
+        let newMessage: MessageInterface = {content: messages[i].content, chatRoomId: currentSelectedChatRoom};
+        if (i === messages.length - 1 || (messages[i].sender.id != messages[i + 1].sender.id || (new Date(messages[i].sent_at).getTime() - new Date(messages[i + 1].sent_at).getTime()) >= 60 * 1000)) {
+          const sender : User = {
+            id: messages[i].sender.id,
+            username: messages[i].sender.username,
+            profilePicture: messages[i].sender.profile_picture
+          }
           newMessage = {
-            sender: messages[i].sender,
-            sent_at: handleDate(messages[i].sent_at),
-            message: messages[i].content,
-            profilePic: messages[i].profile_pic,
+            sender: sender,
+            sentAt: handleDate(messages[i].sent_at),
+            content: messages[i].content,
+            chatRoomId: currentSelectedChatRoom
           }
         }
         setMessages((messages) => [...messages, newMessage]);
@@ -118,8 +132,8 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
           ref={index === messages.length - 1 ? handlePagination : null}
           key={index}
           >
-          <Message sentAt={message.sent_at} profilePic={message.profilePic} sender={message.sender}>
-            {message.message}
+          <Message sentAt={message.sentAt} sender={message.sender}>
+            {message.content}
           </Message>
         </div>
       ))}

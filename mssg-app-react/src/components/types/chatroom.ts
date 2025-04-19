@@ -3,9 +3,9 @@ import { User } from "./user";
 export interface ChatRoomProps {
   chatRoomName: string;
   chatRoomId: string;
-  profilePic: string;
+  profilePicture: string;
   handleActiveId: (id: string) => void;
-  ref: ((node:HTMLDivElement) => void) | null;
+  lastChatRoomref: ((node:HTMLDivElement) => void) | null;
   numUnreadMssgs: number;
 }
 
@@ -17,7 +17,6 @@ export interface ChatroomListProps {
 
 export interface ChatRoomInterface {
     user: User;
-    chat_room_id: string;
-    profile_pic: string;
-    num_unread_mssgs: number;
+    chatRoomId: string;
+    numUnreadMssgs: number;
   }

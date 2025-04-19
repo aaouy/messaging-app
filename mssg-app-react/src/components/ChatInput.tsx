@@ -1,16 +1,11 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { ChatInputProps } from './types';
+import { ChatInputProps, MessageInterface } from './types';
 import { sendPostRequest } from './utils';
 
-const ChatInput = ({
-  notificationSocket,
-  messageSocket,
-  chatrooms,
-  setChatrooms,
-}: ChatInputProps) => {
+const ChatInput = ({notificationSocket, messageSocket, chatRooms, setChatRooms}: ChatInputProps) => {
   const [message, setMessage] = useState('');
-  const { chatroom_id } = useParams();
+  const { currentSelectedChatRoom } = useParams();
 
   const updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
@@ -19,7 +14,7 @@ const ChatInput = ({
   const handleMessageSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const postMessageEndpoint = 'http://localhost:8000/message/save/';
-    const messageData = { message: message, chatroom_id: chatroom_id };
+    const messageData: MessageInterface = { content: message, chatRoomId: currentSelectedChatRoom };
     try {
       await sendPostRequest(postMessageEndpoint, messageData);
       setMessage('');
@@ -31,18 +26,17 @@ const ChatInput = ({
     if (notificationSocket && messageSocket && message.trim()) {
       messageSocket.send(
         JSON.stringify({
-          message: message,
+          content: message,
         })
       );
-      const index = chatrooms.findIndex((chatroom) => chatroom.chatroom_id === chatroom_id);
-      const recipient = chatrooms[index].user.username;
-      notificationSocket.send(JSON.stringify({ recipient: recipient, chatroom_id: chatroom_id }));
-
-      const chatroom = chatrooms[index];
-      setChatrooms((oldChatrooms) => [
+      const index = chatRooms.findIndex((chatRoom) => chatRoom.chatRoomId === currentSelectedChatRoom);
+      const recipient = chatRooms[index].user.username;
+      notificationSocket.send(JSON.stringify({ recipient: recipient, chatroom_id: currentSelectedChatRoom }));
+      const chatroom = chatRooms[index];
+      setChatRooms((oldChatRooms) => [
         chatroom,
-        ...oldChatrooms.slice(0, index),
-        ...oldChatrooms.slice(index + 1),
+        ...oldChatRooms.slice(0, index),
+        ...oldChatRooms.slice(index + 1),
       ]);
     }
   };

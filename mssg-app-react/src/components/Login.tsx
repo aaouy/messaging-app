@@ -25,11 +25,11 @@ const Login = ({ loginEndpoint }: LoginProps) => {
     const userData = { username: username, password: password };
     try {
       const data = await sendPostRequest<UserLoginResponse>(loginEndpoint, userData);
-      localStorage.setItem('username', data.username);
-      localStorage.setItem('profile_pic', data.profile_pic);
+      localStorage.setItem('username', data.user.username);
+      localStorage.setItem('profile_pic', data.user.profile_picture);
       navigate('/message');
     } catch (error: any) {
-      console.error(error.data);
+      console.error(error);
     }
   };
 

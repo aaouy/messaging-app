@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DialogProps, CreateChatRoomResponse } from './types/index';
+import { addUserModalProps, ChatRoomInterface, CreateChatRoomResponse, User } from './types/index';
 import { sendPostRequest } from './utils';
 
-const AddUserModal = ({ chatroomSocket, modalRef, addChatRoom }: DialogProps) => {
-  const [username, setUsername] = useState('');
-  const [error, setError] = useState(false);
+const AddUserModal = ({ chatRoomSocket, modalRef, addChatRoom }: addUserModalProps) => {
+  const [username, setUsername] = useState<string>('');
+  const [userExists, setUserExists] = useState<boolean>(true);
   const navigate = useNavigate();
 
-  const updateUser = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const updateUser = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setUsername(event.target.value);
   };
 
@@ -17,31 +17,32 @@ const AddUserModal = ({ chatroomSocket, modalRef, addChatRoom }: DialogProps) =>
     const createChatRoomEndpoint = `http://localhost:8000/chatroom/create/`;
     try {
       const data = await sendPostRequest<CreateChatRoomResponse>(createChatRoomEndpoint, { name: username });
-      const newChatRoom = {
-        'user': {'id': data.user.id, 'username': data.user.username, 'profilePicture': data.profile_pic},
-        'chat_room_id': data.chatroom_id,
-        'profile_pic': data.profile_pic,
-        'num_unread_mssgs': 0
+      const user : User = {
+        id: data.user.id,
+        username: data.user.username,
+        profilePicture: data.user.profile_picture
+      }
+      const newChatRoom: ChatRoomInterface = {
+        user: user,
+        chatRoomId: data.chatroom_id,
+        numUnreadMssgs: 0
       };
-      console.log(chatroomSocket)
-      chatroomSocket?.send(JSON.stringify({
-        user: {'id': data.user.id, 'username': data.user.username},
-        chatroom_id: data.chatroom_id,
-      }))
-      setError(false);
+      chatRoomSocket?.send(JSON.stringify(newChatRoom));
+      setUserExists(true);
       setUsername('');
-      navigate(`/message/${data.chatroom_id}`);
       addChatRoom(newChatRoom);
+      navigate(`/message/${data.chatroom_id}`);
       modalRef.current?.close();
     } catch (error: any) {
-      const response = error.response;
-      console.error(response.data.error);
-      setError(true);
+      console.error(error);
+      setUserExists(false);
     }
   };
 
-  const closeModal = (event: React.MouseEvent<HTMLDialogElement>) => {
+  const closeModal = (event: React.MouseEvent<HTMLDialogElement>): void => {
     if (event.target === modalRef.current) {
+      setUsername('');
+      setUserExists(true);
       modalRef.current?.close();
     }
   };
@@ -53,7 +54,7 @@ const AddUserModal = ({ chatroomSocket, modalRef, addChatRoom }: DialogProps) =>
         <div className='flex grow-2'>
           <form className="w-full flex flex-col justify-evenly items-center text-white" onSubmit={handleSubmit}>
             <input className="text-white bg-[#424549] p-1 outline-none rounded-lg" onChange={updateUser} type="text" value={username} placeholder='Add a user...'/>
-            <div className='text-[red] text-sm h-5'>{error && <p>User was not found</p>}</div>
+            <div className='text-[red] text-sm h-5'>{!userExists && <p>User was not found</p>}</div>
             <input className="w-20 bg-[#7289da] text-sm hover:cursor-pointer hover:bg-[#5b6dae] rounded-lg" type="submit" />
           </form>
         </div>

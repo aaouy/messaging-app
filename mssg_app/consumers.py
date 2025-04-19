@@ -19,32 +19,31 @@ class ChatConsumer(WebsocketConsumer):
         self.accept() 
     
     def receive(self, text_data):
-        message = json.loads(text_data)['message']
+        content = json.loads(text_data)['content']
         sender = self.scope['user']
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
                 'type': 'chat_message',
-                'sender': sender.username,
-                'message': message,
-                'profile_pic': HOST_PREFIX + sender.profile_picture.url
+                'sender': {'id': sender.id, 'username': sender.username, 'profile_picture': HOST_PREFIX + sender.profile_picture.url},
+                'content': content,
             }
         )
             
     def chat_message(self, event):
-        message = event['message']
+        content = event['content']
         sender = event['sender']
-        profile_pic = event['profile_pic']
+        profile_pic = sender['profile_picture']
         
         response = {
             'type': 'chat',
-            'message': message,
+            'content': content,
             'sent_at': str(datetime.datetime.now(datetime.timezone.utc)),
         }
         
-        if sender != self.last_sender:
+        if not self.last_sender or sender['id'] != self.last_sender['id']:
             response['sender'] = sender
-            response['profile_pic'] = profile_pic
+            response['profile_picture'] = profile_pic
             self.last_sender = sender
         self.send(text_data=json.dumps(response))
         
@@ -94,10 +93,10 @@ class NewChatroom(WebsocketConsumer):
     
     def receive(self, text_data):
         text_data_dict = json.loads(text_data)
-        recipient = text_data_dict['user']['username']
+        recipient_username = text_data_dict['user']['username']
         chatroom_id = text_data_dict['chatroom_id']
         async_to_sync(self.channel_layer.group_send)(
-            f'chatroom_{recipient}',
+            f'chatroom_{recipient_username}',
             {
                 'type': 'new_chatroom',
                 'chatroom_id': chatroom_id,
@@ -111,11 +110,8 @@ class NewChatroom(WebsocketConsumer):
         response = {
             'type': 'chatroom',
             'chatroom_id': chatroom_id,
-            'sender': sender.username,
-            'sender_id': sender.id,
-            'profile_pic': HOST_PREFIX + sender.profile_picture.url,
+            'sender': {'id': sender.id, 'sender': sender.username, 'profile_picture': HOST_PREFIX + sender.profile_picture.url}
         }
-        print('sending...')
         self.send(text_data=json.dumps(response))
 
 

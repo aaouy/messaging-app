@@ -34,7 +34,7 @@ def login_user(request):
     user = authenticate(request, username=data["username"], password=data["password"])
     if user:
         login(request, user)
-        return JsonResponse({'id': user.id, 'username': user.username, 'profile_pic': HOST_PREFIX + user.profile_picture.url})
+        return JsonResponse({'user': {'id': user.id, 'username': user.username, 'profile_picture': HOST_PREFIX + user.profile_picture.url}}, status=200)
     return JsonResponse({"error": "Invalid credentials"}, status=400)
 
 @login_required
@@ -51,7 +51,7 @@ def create_chatroom(request):
         chatroom = ChatRooms.objects.create(name=data.get('name'))
         recipient = Profile.objects.get(username=data.get('name'))
         chatroom.users.add(request.user, recipient)
-        return JsonResponse({"chatroom_id": chatroom.chatroom_id, "user": {'id': recipient.id, 'username': recipient.username}, "profile_pic": HOST_PREFIX + recipient.profile_picture.url}, status=201)
+        return JsonResponse({"chatroom_id": chatroom.chatroom_id, "user": {'id': recipient.id, 'username': recipient.username, "profile_picture": HOST_PREFIX + recipient.profile_picture.url}}, status=201)
     except Profile.DoesNotExist:
         return JsonResponse({'error': 'Profile does not exist'}, status=400)
     except json.JSONDecodeError:
@@ -66,8 +66,8 @@ def create_chatroom(request):
 def save_message(request):
     try:
         data = json.loads(request.body)
-        chatroom = ChatRooms.objects.get(chatroom_id=data['chatroom_id'])
-        Messages.objects.create(sender=request.user, chatroom=chatroom, content=data['message'])
+        chatroom = ChatRooms.objects.get(chatroom_id=data['chatroomId'])
+        Messages.objects.create(sender=request.user, chatroom=chatroom, content=data['content'])
         return HttpResponse('message saved', status=201)
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON body.'}, status=400)
@@ -85,7 +85,7 @@ def get_chatroom(request, page):
         chatroom_list = []
         for chatroom in chatrooms:
             recipient = chatroom.users.exclude(id=request.user.id).first()
-            chatroom_obj = {'chatroom_id': chatroom.chatroom_id, 'user': {'id': recipient.id, 'username': recipient.username},'profile_pic': HOST_PREFIX + recipient.profile_picture.url, 'unread_messages': chatroom.num_unread_mssgs}
+            chatroom_obj = {'chat_room_id': chatroom.chatroom_id, 'user': {'id': recipient.id, 'username': recipient.username, 'profile_picture': HOST_PREFIX + recipient.profile_picture.url}, 'num_unread_messages': chatroom.num_unread_mssgs}
             chatroom_list.append(chatroom_obj)
             
         paginator = Paginator(chatroom_list, 20)
@@ -125,7 +125,7 @@ def get_chatroom_messages(request, chatroom_id, page):
 
     chatroom_messages = []
     for message in messages_page:
-        message_obj = {'chatroom': chatroom_id, 'content': message.content, 'sender': message.sender.username, 'profile_pic': HOST_PREFIX + message.sender.profile_picture.url, 'sent_at': message.sent_at}
+        message_obj = {'chatroom': chatroom_id, 'content': message.content, 'sender': {'id': message.sender.id, 'username': message.sender.username, 'profile_picture': HOST_PREFIX + message.sender.profile_picture.url}, 'sent_at': message.sent_at}
         chatroom_messages.append(message_obj)
         
     response = {

@@ -32,10 +32,9 @@ const Register = ({ registerEndpoint }: RegisterProps) => {
     const userData = { username: username, password: password };
     try {
       const data = await sendPostRequest(registerEndpoint, userData);
-      console.log(data);
       navigate('/login');
     } catch (error: any) {
-      console.log(error.data);
+      console.log(error);
     }
   };
   return (

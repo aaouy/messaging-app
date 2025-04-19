@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { ChatRoomInterface } from './types';
 
 const ChatPage = () => {
-  const [chatrooms, setChatrooms] = useState<ChatRoomInterface[]>([]);
+  const [chatRooms, setChatRooms] = useState<ChatRoomInterface[]>([]);
   const [notificationSocket, setNotificationSocket] = useState<WebSocket | null>(null); 
   const username = localStorage.getItem('username');
 
@@ -19,8 +19,8 @@ const ChatPage = () => {
 
   return (
     <div className="flex h-full">
-      <ChatRoomList notificationSocket={notificationSocket} chatrooms={chatrooms} setChatrooms={setChatrooms}/>
-      <ChatWindow notificationSocket={notificationSocket} chatrooms={chatrooms} setChatrooms={setChatrooms} />
+      <ChatRoomList notificationSocket={notificationSocket} chatRooms={chatRooms} setChatRooms={setChatRooms}/>
+      <ChatWindow notificationSocket={notificationSocket} chatRooms={chatRooms} setChatRooms={setChatRooms} />
     </div>
   );
 };

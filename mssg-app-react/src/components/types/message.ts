@@ -1,15 +1,16 @@
+import { User } from "./user";
+
 export interface MessageProps {
+  sender: User | undefined;
   children: string;
-  sender?: string;
-  profilePic?: string;
   sentAt?: string | null;
 }
 
-export interface MessageData {
-  sender?: string;
-  message: string;
-  profile_pic?: string;
-  sent_at?: string | null;
+export interface MessageInterface {
+  sender?: User;
+  content: string;
+  sentAt?: string | null;
+  chatRoomId: string | undefined;
 }
 
 export interface MessageListProps {

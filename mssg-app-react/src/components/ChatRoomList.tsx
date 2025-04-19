@@ -1,24 +1,24 @@
-import { ChatRoomInterface, ChatroomListProps } from './types/index.ts';
+import { ChatRoomInterface, ChatroomListProps, GetChatRoomResponse, User } from './types/index.ts';
 import { useParams } from 'react-router-dom';
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import axios from 'axios';
 import ChatRoom from './ChatRoom.tsx';
 import ProfileBar from './ProfileBar.tsx';
 import NewMessageIcon from '../assets/new-message-icon.svg?react';
 import AddUserModal from './AddUserModal.tsx';
 
-const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomListProps) => {
+const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomListProps) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const currentPageRef = useRef<number>(1);
-  const hasNextRef = useRef<boolean>(true);
+  const hasNextRef = useRef<boolean>(false);
   const observer = useRef<IntersectionObserver | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { chatroom_id } = useParams();
+  const { currentSelectedChatRoom } = useParams();
   const [chatroomSocket, setChatroomSocket] = useState<WebSocket | null>(null);
   const username = localStorage.getItem('username');
 
   const addChatRoom = (newChatRoom: ChatRoomInterface) => {
-    setChatrooms((chatRooms) => [newChatRoom, ...chatRooms]);
+    setChatRooms((chatRooms) => [newChatRoom, ...chatRooms]);
   };
 
   useEffect(() => {
@@ -33,19 +33,19 @@ const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomL
     }
     notificationSocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      const index = chatrooms.findIndex((chatroom) => chatroom.chatroom_id === data.chatroom_id);
-      const chatroom = chatrooms[index];
-      if (chatroom_id !== chatroom.chatroom_id) chatroom.unread_messages += 1; // if not the currently selected chatroom, add 1. 
-      setChatrooms((oldChatrooms) => [
-        chatroom,
-        ...oldChatrooms.slice(0, index),
-        ...oldChatrooms.slice(index + 1),
+      const index = chatRooms.findIndex((chatRoom) => chatRoom.chatRoomId === data.chat_room_id);
+      const chatRoom = chatRooms[index];
+      if (currentSelectedChatRoom !== chatRoom.chatRoomId) chatRoom.numUnreadMssgs += 1; // if not the currently selected chatroom, add 1. 
+      setChatRooms((oldChatRooms) => [
+        chatRoom,
+        ...oldChatRooms.slice(0, index),
+        ...oldChatRooms.slice(index + 1),
       ]);
     };
     return () => {
       notificationSocket.onmessage = null;
     };
-  }, [notificationSocket, chatrooms, chatroom_id]);
+  }, [notificationSocket, chatRooms, currentSelectedChatRoom]);
 
   useEffect(() => {
     const newChatroomSocketEndpoint = `ws://localhost:8000/ws/chatroom/${username}/`;
@@ -55,13 +55,13 @@ const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomL
       console.log("chatroom websocket opened!");
       setChatroomSocket(newChatroomSocket);
     };
+
     newChatroomSocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
       const chatroom : ChatRoomInterface = {
-        'user': {'id': data.sender_id, 'username': data.sender, 'profilePicture': data.profile_pic},
-        'chatroom_id': data.chatroom_id,
-        'profile_pic': data.profile_pic,
-        'unread_messages': 1,
+        user: {'id': data.sender_id, 'username': data.sender, 'profilePicture': data.profile_picture},
+        chatRoomId: data.chatroom_id,
+        numUnreadMssgs: 1,
       }
       addChatRoom(chatroom);
     }
@@ -76,10 +76,21 @@ const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomL
       const response = await axios.get(chatroomEndpoint, {
         withCredentials: true,
       });
-      response.data.chatrooms.forEach((chatroom: ChatRoomInterface) => {
-        setChatrooms((chatRooms) => [...chatRooms, chatroom]);
+      response.data.chatrooms.forEach((chatRoomResponse: GetChatRoomResponse) => {
+        const user : User = {
+          id: chatRoomResponse.user.id,
+          username: chatRoomResponse.user.username,
+          profilePicture: chatRoomResponse.user.profile_picture
+        }
+        const chatRoom : ChatRoomInterface = {
+          user: user,
+          chatRoomId: chatRoomResponse.chat_room_id,
+          numUnreadMssgs: chatRoomResponse.num_unread_messages
+        }
+        setChatRooms((chatRooms) => [...chatRooms, chatRoom]);
         currentPageRef.current = response.data.current_page;
         hasNextRef.current = response.data.has_next;
+        console.log(hasNextRef.current);
       });
     } catch (error: any) {
       console.error(error);
@@ -106,9 +117,9 @@ const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomL
   };
 
   const handleChatRoomSelect = (id: string) => {
-    setChatrooms((oldChatrooms) =>
-      oldChatrooms.map((chatroom) =>
-        chatroom.chatroom_id === id ? { ...chatroom, unread_messages: 0 } : chatroom
+    setChatRooms((oldChatRooms) =>
+      oldChatRooms.map((chatRoom) =>
+        chatRoom.chatRoomId === id ? { ...chatRoom, unread_messages: 0 } : chatRoom
       )
     );
   };
@@ -121,15 +132,15 @@ const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomL
           <NewMessageIcon className="w-7 h-7 cursor-pointer hover:scale-[1.1]"></NewMessageIcon>
         </button>
       </div>
-      <AddUserModal chatroomSocket={chatroomSocket} addChatRoom={addChatRoom} modalRef={modalRef} />
+      <AddUserModal chatRoomSocket={chatroomSocket} addChatRoom={addChatRoom} modalRef={modalRef} />
       <div className="overflow-scroll p-1 h-[82vh]">
-        {chatrooms.map((chatRoom, index) => (
+        {chatRooms.map((chatRoom, index) => (
           <ChatRoom
-            ref={index === chatrooms.length - 1 ? lastChatRoomRef : null}
-            unreadMessages={chatRoom.unread_messages}
+            lastChatRoomref={index === chatRooms.length - 1 ? lastChatRoomRef : null}
+            numUnreadMssgs={chatRoom.numUnreadMssgs}
             chatRoomName={chatRoom.user.username}
-            chatroomId={chatRoom.chatroom_id}
-            profilePic={chatRoom.profile_pic}
+            chatRoomId={chatRoom.chatRoomId}
+            profilePicture={chatRoom.user.profilePicture}
             handleActiveId={handleChatRoomSelect}
             key={index}
           />

@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import ProfileModal from './ProfileModal.tsx';
 import SettingsModal from './SettingsModal.tsx';
 import SettingsIcon from "../assets/settings-icon.svg?react";
 
 const ProfileBar = () => {
-  const modalRef = useRef<HTMLDialogElement>(null);
+  const profileModalRef = useRef<HTMLDialogElement>(null);
   const settingsModalRef = useRef<HTMLDialogElement>(null);
   const [username, setUsername] = useState<string | null>(localStorage.getItem('username'));
   const [profilePicture, setProfilePicture] = useState<string>('../assets/default.jpg');
 
   const handleProfileClick = (event: React.MouseEvent<HTMLImageElement>) => {
     event.preventDefault();
-    modalRef.current?.showModal();
+    profileModalRef.current?.showModal();
   };
 
   const handleSettingsClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -32,7 +31,7 @@ const ProfileBar = () => {
 
   return (
     <div className="flex items-center w-full h-[10vh] bg-inherit p-2 pt-0">
-      <ProfileModal modalRef={modalRef} setProfilePicture={setProfilePicture} />
+      <ProfileModal modalRef={profileModalRef} setProfilePicture={setProfilePicture} />
       <div className="flex bg-[#424549] h-full w-full rounded-lg items-center p-3">
         <div className='flex items-center h-full w-1/3 justify-between'>
           <img

@@ -13,7 +13,6 @@ const SettingsModal = ({settingsModalRef} : settingsModalProps) => {
 
   const handleLogout = async (event: React.MouseEvent<HTMLLIElement>) => {
     event.preventDefault();
-    console.log('hi');
     const logoutEndpoint = `http://localhost:8000/user/logout/`;
     const response = await sendPostRequest(logoutEndpoint, {})
     console.log(response);
