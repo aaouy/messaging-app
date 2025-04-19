@@ -4,7 +4,7 @@ import { DialogProps } from './types/dialogue';
 import { sendPostRequest } from './utils';
 import { CreateChatRoomResponse } from './types/responses';
 
-const Modal = ({ chatroomSocket, modal, addChatRoom }: DialogProps) => {
+const AddUserModal = ({ chatroomSocket, modal, addChatRoom }: DialogProps) => {
   const [username, setUsername] = useState('');
   const [error, setError] = useState(false);
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ const Modal = ({ chatroomSocket, modal, addChatRoom }: DialogProps) => {
       modal.current?.close();
     }
   };
-  
+
   return (
     <dialog className="border-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" ref={modal} onClick={closeModal}>
       <div className="w-[30vw] h-[30vh] flex flex-col p-3 bg-[#282b30]">
@@ -64,4 +64,4 @@ const Modal = ({ chatroomSocket, modal, addChatRoom }: DialogProps) => {
   );
 };
 
-export default Modal;
+export default AddUserModal;

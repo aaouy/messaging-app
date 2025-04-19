@@ -1,12 +1,11 @@
-import { ChatRoomInterface } from './types/index.ts';
-import { ChatroomListProps } from './types/index.ts';
+import { ChatRoomInterface, ChatroomListProps } from './types/index.ts';
 import { useParams } from 'react-router-dom';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import Modal from './AddUserModal.tsx';
 import axios from 'axios';
 import ChatRoom from './ChatRoom.tsx';
 import ProfileBar from './ProfileBar.tsx';
 import NewMessageIcon from '../assets/new-message-icon.svg?react';
+import AddUserModal from './AddUserModal.tsx';
 
 const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomListProps) => {
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -122,7 +121,7 @@ const ChatRoomList = ({ notificationSocket, setChatrooms, chatrooms }: ChatroomL
           <NewMessageIcon className="w-7 h-7 cursor-pointer hover:scale-[1.1]"></NewMessageIcon>
         </button>
       </div>
-      <Modal chatroomSocket={chatroomSocket} addChatRoom={addChatRoom} modal={modalRef} />
+      <AddUserModal chatroomSocket={chatroomSocket} addChatRoom={addChatRoom} modal={modalRef} />
       <div className="overflow-scroll p-1 h-[82vh]">
         {chatrooms.map((chatRoom, index) => (
           <ChatRoom
