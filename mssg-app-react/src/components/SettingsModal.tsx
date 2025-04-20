@@ -1,6 +1,6 @@
 import { settingsModalProps } from "./types/settingsModal"
 import { useNavigate } from "react-router-dom";
-import { sendPostRequest } from "./utils";
+import { getCookie } from "./utils";
 
 const SettingsModal = ({settingsModalRef} : settingsModalProps) => {
   const navigate = useNavigate();
@@ -13,10 +13,25 @@ const SettingsModal = ({settingsModalRef} : settingsModalProps) => {
 
   const handleLogout = async (event: React.MouseEvent<HTMLLIElement>) => {
     event.preventDefault();
-    const logoutEndpoint = `http://localhost:8000/user/logout/`;
-    const response = await sendPostRequest(logoutEndpoint, {})
-    console.log(response);
-    navigate("/login");
+    try {
+      const logoutUrl = `http://localhost:8000/user/logout/`;
+      const csrfCookie = getCookie('csrftoken');
+      if (!csrfCookie)
+        throw new Error("CSRF cookie was not able to be fetched from the browser!");
+  
+      const response = await fetch(logoutUrl, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfCookie
+        },
+      })
+      navigate("/login");
+
+    } catch (error:any) {
+        console.error(error);
+    }
   }
 
   return (

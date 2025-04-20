@@ -22,18 +22,20 @@ const ProfileBar = () => {
   useEffect(() => {
     const getProfilePicture = async () => {
       const imageUrl = localStorage.getItem('profile_pic');
+
       if (imageUrl) 
         setProfilePicture(imageUrl);
       };
     setUsername(localStorage.getItem('username'));
     getProfilePicture();
+
   }, []);
 
   return (
     <div className="flex items-center w-full h-[10vh] bg-inherit p-2 pt-0">
       <ProfileModal modalRef={profileModalRef} setProfilePicture={setProfilePicture} />
       <div className="flex bg-[#424549] h-full w-full rounded-lg items-center p-3">
-        <div className='flex items-center h-full w-1/3 justify-between'>
+        <div className='flex items-center h-full w-1/2 justify-between'>
           <img
             className="w-[45px] h-[45px] rounded-[50%] cursor-pointer hover:scale-[1.1]"
             onClick={handleProfileClick}
@@ -42,7 +44,7 @@ const ProfileBar = () => {
           />
           <p className='text-white'>{username}</p>
         </div>
-        <div className='flex w-2/3 justify-end'>
+        <div className='flex w-1/2 justify-end'>
           <button className="w-[30px] h-[30px] rounded-[50%] cursor-pointer hover:scale-[1.1]" onClick={handleSettingsClick}>
             <SettingsIcon className='w-[30px] h-[30px]'></SettingsIcon>
           </button>

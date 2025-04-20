@@ -1,33 +1,62 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LoginProps } from './types';
-import { sendPostRequest } from './utils';
-import { UserLoginResponse } from './types/responses';
+import { getCookie } from './utils';
 
-const Login = ({ loginEndpoint }: LoginProps) => {
+const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     const getCsrfToken = async () => {
-      const response = await axios.get('http://localhost:8000/user/get-csrf-token/', {
-        withCredentials: true,
-      });
-      console.log(response.data);
+      try {
+
+        const response = await fetch('http://localhost:8000/user/get-csrf-token/', {
+          method: "GET",
+          credentials: 'include'
+        })
+        
+        if (!response.ok)
+          throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
+        
+      } catch (error: any) {
+        console.error(error);
+      }
+
     };
     getCsrfToken();
   }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const loginUrl = "http://localhost:8000/user/login/";
     const userData = { username: username, password: password };
     try {
-      const data = await sendPostRequest<UserLoginResponse>(loginEndpoint, userData);
+
+      const csrfCookie = getCookie("csrftoken");
+      if (!csrfCookie)
+        throw new Error("CSRF cookie could not be obtained from the browser!");
+
+      const response = await fetch(loginUrl, {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfCookie,
+        },
+        body: JSON.stringify(userData)
+      })
+      
+      if (!response.ok) {
+        throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
       localStorage.setItem('username', data.user.username);
       localStorage.setItem('profile_pic', data.user.profile_picture);
       navigate('/message');
+
     } catch (error: any) {
       console.error(error);
     }

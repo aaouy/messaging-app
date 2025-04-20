@@ -3,13 +3,13 @@ import { User } from "./user";
 export interface MessageProps {
   sender: User | undefined;
   children: string;
-  sentAt?: string | null;
+  sentAt?: string;
 }
 
 export interface MessageInterface {
-  sender?: User;
+  sender: User | undefined;
   content: string;
-  sentAt?: string | null;
+  sentAt?: string;
   chatRoomId: string | undefined;
 }
 

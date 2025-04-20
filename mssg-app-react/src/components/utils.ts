@@ -18,22 +18,6 @@ export function getCookie(name: string) {
   return cookieValue;
 }
 
-export async function sendPostRequest<T>(endPoint: string, data: object): Promise<T> {
-  try {
-    const csrfToken = getCookie("csrftoken");
-    const response: AxiosResponse<T> = await axios.post(endPoint, data, {
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": csrfToken,
-      },
-      withCredentials: true,
-    });
-    return response.data;
-  } catch (error: any) {
-    throw error;
-  }
-}
-
 export const detectLinks = (text: string): string => {
     const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]|\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
     const linkedText = text.replace(urlRegex, (url) => {
@@ -41,4 +25,22 @@ export const detectLinks = (text: string): string => {
         return `<a href="${fullUrl}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
     return DOMPurify.sanitize(linkedText);
+};
+
+const toCamelCase = (str: string): string => {
+  return str.replace(/_([a-z])/g, (match, group1) => group1.toUpperCase());
+};
+
+export const convertSnakeToCamel = (obj: Record<string, any>): Record<string, any> => {
+  const newObj: Record<string, any> = {};
+  for (const key in obj) {
+    if (obj[key] !== null && typeof obj[key] === 'object') {
+      obj[key] = convertSnakeToCamel(obj[key]);
+    }
+    if (obj.hasOwnProperty(key)) {
+      const newKey = toCamelCase(key);
+      newObj[newKey] = obj[key];
+    }
+  }
+  return newObj;
 };

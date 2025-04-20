@@ -5,10 +5,6 @@ from asgiref.sync import async_to_sync
 HOST_PREFIX = 'http://localhost:8000'
 
 class ChatConsumer(WebsocketConsumer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.last_sender = None
-        
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'chat_{self.room_name}'
@@ -41,10 +37,8 @@ class ChatConsumer(WebsocketConsumer):
             'sent_at': str(datetime.datetime.now(datetime.timezone.utc)),
         }
         
-        if not self.last_sender or sender['id'] != self.last_sender['id']:
-            response['sender'] = sender
-            response['profile_picture'] = profile_pic
-            self.last_sender = sender
+        response['sender'] = sender
+        response['profile_picture'] = profile_pic
         self.send(text_data=json.dumps(response))
         
 class NotificationConsumer(WebsocketConsumer):        
@@ -60,9 +54,10 @@ class NotificationConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data_dict = json.loads(text_data)
         recipient = text_data_dict['recipient']
-        chatroom_id = text_data_dict['chatroom_id']
+        recipient_username = recipient['username']
+        chatroom_id = text_data_dict['chat_room_id']
         async_to_sync(self.channel_layer.group_send)(
-            f'notification_{recipient}',
+            f'notification_{recipient_username}',
             {
                 'type': 'send_notification',
                 'recipient': recipient,
@@ -88,13 +83,12 @@ class NewChatroom(WebsocketConsumer):
             self.room_group_name,
             self.channel_name,
         )
-        print(self.room_group_name)
         self.accept() 
     
     def receive(self, text_data):
         text_data_dict = json.loads(text_data)
         recipient_username = text_data_dict['user']['username']
-        chatroom_id = text_data_dict['chatroom_id']
+        chatroom_id = text_data_dict['chatRoomId']
         async_to_sync(self.channel_layer.group_send)(
             f'chatroom_{recipient_username}',
             {

@@ -8,7 +8,6 @@ from django.db.models import Max, F
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.exceptions import ObjectDoesNotExist
 
 HOST_PREFIX = 'http://localhost:8000'
 
@@ -48,10 +47,11 @@ def logout_user(request):
 def create_chatroom(request):
     try:
         data = json.loads(request.body)
+        print(data)
         chatroom = ChatRooms.objects.create(name=data.get('name'))
         recipient = Profile.objects.get(username=data.get('name'))
         chatroom.users.add(request.user, recipient)
-        return JsonResponse({"chatroom_id": chatroom.chatroom_id, "user": {'id': recipient.id, 'username': recipient.username, "profile_picture": HOST_PREFIX + recipient.profile_picture.url}}, status=201)
+        return JsonResponse({"chatroom_id": chatroom.chatroom_id, "user": {'id': recipient.id, 'username': recipient.username, "profile_picture": HOST_PREFIX + recipient.profile_picture.url}, "num_unread_mssgs": 0}, status=201)
     except Profile.DoesNotExist:
         return JsonResponse({'error': 'Profile does not exist'}, status=400)
     except json.JSONDecodeError:
@@ -66,7 +66,8 @@ def create_chatroom(request):
 def save_message(request):
     try:
         data = json.loads(request.body)
-        chatroom = ChatRooms.objects.get(chatroom_id=data['chatroomId'])
+        print(data)
+        chatroom = ChatRooms.objects.get(chatroom_id=data['chat_room_id'])
         Messages.objects.create(sender=request.user, chatroom=chatroom, content=data['content'])
         return HttpResponse('message saved', status=201)
     except json.JSONDecodeError:
@@ -130,7 +131,7 @@ def get_chatroom_messages(request, chatroom_id, page):
         
     response = {
         'messages': chatroom_messages,
-        'has_next': messages_page.has_next(),
+        'has_next': messages_page.has_next() if messages_page else False,
         'total_pages': paginator.num_pages,
         'current_page': int(page)
     }

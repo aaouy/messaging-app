@@ -9,14 +9,14 @@ function App() {
       <Routes>
         <Route
           path="/register"
-          element={<Register registerEndpoint="http://localhost:8000/user/register/" />}
+          element={<Register/>}
         ></Route>
         <Route
           path="/login"
-          element={<Login loginEndpoint="http://localhost:8000/user/login/" />}
+          element={<Login />}
         ></Route>
         <Route path="/message" element={<ChatPage />}></Route>
-        <Route path="/message/:currentSelectedChatRoom" element={<ChatPage />}></Route>
+        <Route path="/message/:selectedChatRoom" element={<ChatPage />}></Route>
       </Routes>
     </Router>
 

@@ -11,7 +11,13 @@ const ChatPage = () => {
   useEffect(() => {
     const notificationSocketEndpoint = `ws://localhost:8000/ws/notification/${username}/`;
     const newNotificationSocket = new WebSocket(notificationSocketEndpoint);
-    setNotificationSocket(newNotificationSocket);
+
+    newNotificationSocket.onopen = () => {
+      console.log('Notification socket opened!');
+      setNotificationSocket(newNotificationSocket);
+    }
+
+
     return () => {
       newNotificationSocket.close();
     }

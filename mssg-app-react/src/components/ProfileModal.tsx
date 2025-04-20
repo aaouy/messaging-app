@@ -1,5 +1,4 @@
 import Cropper from 'react-easy-crop';
-import axios from 'axios';
 import { Point } from 'react-easy-crop';
 import { useCallback } from 'react';
 import { Area } from 'react-easy-crop';
@@ -95,17 +94,31 @@ const ProfileModal = ({ modalRef, setProfilePicture }: ProfileModalProps) => {
 
     const formData = new FormData();
     formData.append('cropped_image', croppedBlob, 'profile.jpg');
-    const uploadProfilePictureEndpoint = 'http://localhost:8000/upload/profile-pic/';
+    
     try {
-      const response = await axios.post(uploadProfilePictureEndpoint, formData, {
+      
+      const uploadProfilePictureUrl = 'http://localhost:8000/upload/profile-pic/';
+      const csrfCookie = getCookie('csrftoken');
+      if (!csrfCookie)
+        throw new Error("CSRF cookie was not able to be fetched from the browser!");
+
+      const response = await fetch(uploadProfilePictureUrl, {
+        method: "POST",
+        credentials: 'include',
         headers: {
-          'X-CSRFToken': getCookie('csrftoken'),
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfCookie
         },
-        withCredentials: true,
-      });
-      const data = response.data;
+        body: formData
+      })
+
+      if (!response.ok)
+        throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
+
+      const data = await response.json();
       setProfilePicture(data.profile_pic);
       localStorage.setItem('profile_pic', data.profile_pic);
+
     } catch (error: any) {
       console.error(error);
     }

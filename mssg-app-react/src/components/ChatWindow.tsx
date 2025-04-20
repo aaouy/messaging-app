@@ -5,22 +5,25 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const ChatWindow = ({notificationSocket, chatRooms, setChatRooms}: ChatWindowProps) => {
-  const { currentSelectedChatRoom } = useParams();
-  const webSocketUrl = `ws://localhost:8000/ws/chat/${currentSelectedChatRoom}/`;
+  const { selectedChatRoom } = useParams();
   const [messageSocket, setMessageSocket] = useState<WebSocket | null>(null);
+
   useEffect(() => {
+    const webSocketUrl = `ws://localhost:8000/ws/chat/${selectedChatRoom}/`;
     const newMessageSocket = new WebSocket(webSocketUrl);
+
     newMessageSocket.onopen = () => {
-      setMessageSocket(newMessageSocket);
       console.log('message socket opened!');
+      setMessageSocket(newMessageSocket);
     };
+
     return () => {
       newMessageSocket.close();
-      messageSocket?.close();
     };
-  }, [currentSelectedChatRoom]);
 
-  if (!currentSelectedChatRoom) return <div className="w-[80vw] h-[90vh]"></div>;
+  }, [selectedChatRoom]);
+
+  if (!selectedChatRoom) return <div className="w-[80vw] h-[90vh]"></div>;
   return (
     <div className="w-[80vw] h-[90vh]">
       <MessageList messageSocket={messageSocket} />

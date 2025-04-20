@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MessageInterface, MessageListProps, User } from './types';
+import { MessageInterface, MessageListProps } from './types';
 import Message from './Message';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { convertSnakeToCamel } from './utils';
 
 const MessageList = ({ messageSocket }: MessageListProps) => {
   const [messages, setMessages] = useState<MessageInterface[]>([]);
@@ -10,32 +10,36 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
   const hasNextPageRef= useRef<boolean>(true);
   const [page, setPage] = useState<number>(1);
   const observer = useRef<IntersectionObserver | null>(null);
-  const { currentSelectedChatRoom } = useParams();
+  const { selectedChatRoom } = useParams();
+  const lastMessageRef = useRef<MessageInterface | null>(null);
 
   useEffect(() => {
     setMessages([]);
     getMessages(1);
-  }, [currentSelectedChatRoom]);
+    return () => {
+      lastMessageRef.current = null;
+    }
+  }, [selectedChatRoom]);
 
   useEffect(() => {
     if (!messageSocket) return;
+
     messageSocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      let sender = undefined;
-      if (data.sender) {
-        sender = {
-          id: data.sender.id,
-          username: data.sender.username,
-          profilePicture: data.sender.profile_picture
-        }
-        console.log(sender);
+      const transformedData = convertSnakeToCamel(data);
+
+      const newMessage: MessageInterface = {
+        sender: undefined,
+        content: transformedData.content,
+        sentAt: transformedData.sentAt,
+        chatRoomId: selectedChatRoom
       }
-      const newMessage = {
-        sender: sender,
-        content: data.content,
-        sentAt: handleDate(data.sent_at),
-        chatRoomId: currentSelectedChatRoom
-      };
+
+      if (!lastMessageRef.current || (lastMessageRef.current && lastMessageRef.current.sender && (transformedData.sender.id !== lastMessageRef.current.sender.id)) || (lastMessageRef.current && newMessage.sentAt && lastMessageRef.current.sentAt && (new Date(newMessage.sentAt).getTime() - new Date(lastMessageRef.current.sentAt).getTime() >= 60 * 1000))) {
+        newMessage.sender = transformedData.sender;
+      }
+
+      lastMessageRef.current = newMessage;
       setMessages((messages) => [newMessage, ...messages]);
     };
     return () => {
@@ -43,65 +47,47 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
     };
   }, [messageSocket]);
 
-  const handleDate = (sentAt: string) => {
-    const today = new Date();
-    let sentAtLocal = null;
-    if (sentAt) {
-      const dateObj = new Date(sentAt);
-      if (dateObj.getDate() === today.getDate()) {
-        sentAtLocal = new Intl.DateTimeFormat('en-GB', {
-          timeStyle: 'short',
-        }).format(dateObj);
-
-      } else if (dateObj.getDate() === today.getDate() - 1) {
-        sentAtLocal =
-          'Yesterday, ' +
-          new Intl.DateTimeFormat('en-GB', {
-            timeStyle: 'short',
-          }).format(dateObj);
-        
-      } else {
-        sentAtLocal = new Intl.DateTimeFormat('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-        }).format(dateObj);
-      }
-    }
-    return sentAtLocal;
-  };
-
   const getMessages = async (page: number) => {
-    const getMessagesEndpoint = `http://localhost:8000/messages/${currentSelectedChatRoom}/${page}/`;
+    const getMessagesUrl = `http://localhost:8000/messages/${selectedChatRoom}/${page}/`;
     try {
-      const response = await axios.get(getMessagesEndpoint, {
-        withCredentials: true,
-      });
-      
-      const messages = response.data.messages // newest mssgs at the front.
-      for (let i = 0; i < messages.length; i++) {
-        let newMessage: MessageInterface = {content: messages[i].content, chatRoomId: currentSelectedChatRoom};
-        if (i === messages.length - 1 || (messages[i].sender.id != messages[i + 1].sender.id || (new Date(messages[i].sent_at).getTime() - new Date(messages[i + 1].sent_at).getTime()) >= 60 * 1000)) {
-          const sender : User = {
-            id: messages[i].sender.id,
-            username: messages[i].sender.username,
-            profilePicture: messages[i].sender.profile_picture
-          }
+
+      const response = await fetch(getMessagesUrl, {
+        method: "GET",
+        credentials: 'include'
+      })
+
+      if (!response.ok)
+        throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
+
+      const data = await response.json();
+      const loadedMessages = data.messages // newest mssgs at the front.
+
+      if (loadedMessages.length === 0) return;
+
+      const latestMessage = loadedMessages[0];
+      console.log(latestMessage);
+      lastMessageRef.current = {sender: convertSnakeToCamel(latestMessage).user, content: latestMessage.content, sentAt: latestMessage.sent_at, chatRoomId: selectedChatRoom};
+
+      for (let i = 0; i < loadedMessages.length; i++) {
+        let newMessage: MessageInterface = {sender: undefined, content: loadedMessages[i].content, sentAt: undefined, chatRoomId: selectedChatRoom};
+        if (i === loadedMessages.length - 1 || (loadedMessages[i].sender.id != loadedMessages[i + 1].sender.id || (new Date(loadedMessages[i].sent_at).getTime() - new Date(loadedMessages[i + 1].sent_at).getTime()) >= 60 * 1000)) {
+          const sender = convertSnakeToCamel(loadedMessages[i]).sender;
           newMessage = {
             sender: sender,
-            sentAt: handleDate(messages[i].sent_at),
-            content: messages[i].content,
-            chatRoomId: currentSelectedChatRoom
+            sentAt: loadedMessages[i].sent_at,
+            content: loadedMessages[i].content,
+            chatRoomId: selectedChatRoom
           }
         }
+
         setMessages((messages) => [...messages, newMessage]);
       }
-      hasNextPageRef.current = response.data.has_next;
-      setPage(response.data.current_page);
+      hasNextPageRef.current = data.has_next;
+      setPage(data.current_page);
+
     } catch (error: any) {
       console.error(error);
+
     } finally {
       setIsLoading(false);
     }

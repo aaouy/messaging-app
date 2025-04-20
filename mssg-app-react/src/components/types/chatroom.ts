@@ -16,7 +16,7 @@ export interface ChatroomListProps {
 }
 
 export interface ChatRoomInterface {
-    user: User;
-    chatRoomId: string;
-    numUnreadMssgs: number;
+  user: User;
+  chatRoomId: string;
+  numUnreadMssgs: number;
   }
