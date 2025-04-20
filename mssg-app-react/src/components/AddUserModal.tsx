@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { addUserModalProps, ChatRoomInterface } from './types/index';
+import { AddUserModalProps, ChatRoomInterface } from '../types/index';
 import { convertSnakeToCamel, getCookie } from './utils';
 
-const AddUserModal = ({ chatRoomSocket, modalRef, addChatRoom }: addUserModalProps) => {
+const AddUserModal = ({ chatRoomSocket, modalRef, addChatRoom }: AddUserModalProps) => {
   const [username, setUsername] = useState<string>('');
   const [userExists, setUserExists] = useState<boolean>(true);
   const navigate = useNavigate();

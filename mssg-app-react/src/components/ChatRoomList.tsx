@@ -1,4 +1,4 @@
-import { ChatRoomInterface, ChatroomListProps, GetChatRoomResponse } from './types/index.ts';
+import { ChatRoomInterface, ChatroomListProps, GetChatRoomResponse } from '../types/index.ts';
 import { useParams } from 'react-router-dom';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import ChatRoom from './ChatRoom.tsx';

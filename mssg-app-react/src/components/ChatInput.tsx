@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { ChatInputProps } from './types';
+import { ChatInputProps } from '../types';
 import { getCookie } from './utils';
 
 const ChatInput = ({notificationSocket, messageSocket, chatRooms, setChatRooms}: ChatInputProps) => {

@@ -1,4 +1,4 @@
-import { User } from "./user";
+import { ChatRoomInterface } from "../models/chatroom";
 
 export interface ChatRoomProps {
   chatRoomName: string;
@@ -14,9 +14,3 @@ export interface ChatroomListProps {
   setChatRooms: React.Dispatch<React.SetStateAction<ChatRoomInterface[]>>;
   notificationSocket: WebSocket | null;
 }
-
-export interface ChatRoomInterface {
-  user: User;
-  chatRoomId: string;
-  numUnreadMssgs: number;
-  }

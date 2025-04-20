@@ -1,6 +1,6 @@
 import ChatInput from './ChatInput';
 import MessageList from './MessageList';
-import { ChatWindowProps } from './types';
+import { ChatWindowProps } from '../types';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 

@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { Area } from 'react-easy-crop';
 import { useState } from 'react';
 import { getCookie } from './utils';
-import { ProfileModalProps } from './types/profileModal';
+import { ProfileModalProps } from '../types/index';
 
 
 const ProfileModal = ({ modalRef, setProfilePicture }: ProfileModalProps) => {
@@ -94,7 +94,7 @@ const ProfileModal = ({ modalRef, setProfilePicture }: ProfileModalProps) => {
 
     const formData = new FormData();
     formData.append('cropped_image', croppedBlob, 'profile.jpg');
-    
+
     try {
       
       const uploadProfilePictureUrl = 'http://localhost:8000/upload/profile-pic/';

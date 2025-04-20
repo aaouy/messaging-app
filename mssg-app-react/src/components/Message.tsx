@@ -1,4 +1,4 @@
-import { MessageProps } from './types';
+import { MessageProps } from '../types';
 import { detectLinks } from './utils';
 
 const Message = ({ children, sender, sentAt }: MessageProps) => {
@@ -9,7 +9,7 @@ const Message = ({ children, sender, sentAt }: MessageProps) => {
     let sentAtLocal = undefined;
     if (sentAt) {
       const dateObj = new Date(sentAt);
-      
+
       if (dateObj.getDate() === today.getDate()) {
         sentAtLocal = new Intl.DateTimeFormat('en-GB', {
           timeStyle: 'short',

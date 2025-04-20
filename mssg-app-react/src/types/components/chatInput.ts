@@ -1,6 +1,7 @@
-import { ChatRoomInterface } from "./chatroom";
+import { ChatRoomInterface } from "../models/chatroom";
 
-export interface ChatWindowProps {
+export interface ChatInputProps {
+  messageSocket: WebSocket | null;
   chatRooms: ChatRoomInterface[];
   setChatRooms: React.Dispatch<React.SetStateAction<ChatRoomInterface[]>>;
   notificationSocket: WebSocket | null;

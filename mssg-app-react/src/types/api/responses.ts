@@ -1,4 +1,4 @@
-import { MessageInterface } from "./message";
+import { MessageInterface } from "../models/message";
 
 export interface CreateChatRoomResponse {
     user: UserResponse;

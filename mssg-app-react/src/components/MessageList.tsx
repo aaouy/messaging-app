@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MessageInterface, MessageListProps } from './types';
+import { MessageInterface, MessageListProps } from '../types';
 import Message from './Message';
 import { useParams } from 'react-router-dom';
 import { convertSnakeToCamel } from './utils';

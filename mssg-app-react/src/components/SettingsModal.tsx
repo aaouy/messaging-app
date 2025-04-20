@@ -1,8 +1,8 @@
-import { settingsModalProps } from "./types/settingsModal"
+import { SettingsModalProps } from "../types/index";
 import { useNavigate } from "react-router-dom";
 import { getCookie } from "./utils";
 
-const SettingsModal = ({settingsModalRef} : settingsModalProps) => {
+const SettingsModal = ({settingsModalRef} : SettingsModalProps) => {
   const navigate = useNavigate();
 
   const closeModal = (event: React.MouseEvent<HTMLDialogElement>) => {

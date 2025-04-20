@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { ChatRoomProps } from './types';
+import { ChatRoomProps } from '../types';
 
 const ChatRoom = ({ numUnreadMssgs, chatRoomName, chatRoomId, profilePicture, handleActiveId, lastChatRoomref }: ChatRoomProps) => {
   const navigate = useNavigate();

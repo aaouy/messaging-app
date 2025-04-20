@@ -1,7 +1,7 @@
 import ChatWindow from './ChatWindow';
 import ChatRoomList from './ChatRoomList';
 import { useState, useEffect } from 'react';
-import { ChatRoomInterface } from './types';
+import { ChatRoomInterface } from '../types';
 
 const ChatPage = () => {
   const [chatRooms, setChatRooms] = useState<ChatRoomInterface[]>([]);
