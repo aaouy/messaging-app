@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCookie } from './utils';
-import axios from 'axios';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -10,10 +9,20 @@ const Register = () => {
 
   useEffect(() => {
     const getCsrfToken = async () => {
-      const response = await axios.get('http://localhost:8000/user/get-csrf-token/', {
-        withCredentials: true,
-      });
-      console.log(response.data);
+      try {
+        const getCsrfUrl = "http://localhost:8000/user/get-csrf-token/";
+        const response = await fetch(getCsrfUrl, {
+          method: "GET",
+          credentials: 'include'
+        })
+
+        if (!response.ok)
+          throw new Error("CSRF token could not be fetch from the browser!");
+
+      } catch (error) {
+        console.error(error);
+      }
+
     };
     getCsrfToken();
   }, []);
@@ -28,7 +37,7 @@ const Register = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const registerEndpoint= "http://localhost:8000/user/register/";
+    const registerUrl = "http://localhost:8000/user/register/";
     try {
 
       const userData = { username: username, password: password };
@@ -36,7 +45,7 @@ const Register = () => {
       if (!csrfCookie)
         throw new Error("CSRF cookie was not able to be fetched from the browser!");
 
-      const response = await fetch(registerEndpoint, {
+      const response = await fetch(registerUrl, {
         method: "POST",
         credentials: "include",
         headers: {

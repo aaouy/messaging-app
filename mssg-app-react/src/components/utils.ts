@@ -1,5 +1,3 @@
-import axios from "axios";
-import { AxiosResponse } from "axios";
 import DOMPurify from 'dompurify';
 
 export function getCookie(name: string) {
