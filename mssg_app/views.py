@@ -1,5 +1,6 @@
 import json, uuid
 from .models import ChatRooms, Messages, Profile
+from .utils import serialize_user, serialize_chatroom
 from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
@@ -47,11 +48,9 @@ def logout_user(request):
 def create_chatroom(request):
     try:
         data = json.loads(request.body)
-        print(data)
-        chatroom = ChatRooms.objects.create(name=data.get('name'))
-        recipient = Profile.objects.get(username=data.get('name'))
-        chatroom.users.add(request.user, recipient)
-        return JsonResponse({"chatroom_id": chatroom.chatroom_id, "user": {'id': recipient.id, 'username': recipient.username, "profile_picture": HOST_PREFIX + recipient.profile_picture.url}, "num_unread_mssgs": 0}, status=201)
+        users = Profile.objects.filter(username__in=data['users'])
+        chatroom = ChatRooms.objects.create()
+        chatroom.users.add(*users)
     except Profile.DoesNotExist:
         return JsonResponse({'error': 'Profile does not exist'}, status=400)
     except json.JSONDecodeError:
@@ -60,20 +59,24 @@ def create_chatroom(request):
         return JsonResponse({'error': 'Database error! Possibly duplicate or invalid data.'}, status=400)
     except Exception:
         return JsonResponse({"error": "An unexpected error has occurred."}, status=500)
+    
+    user_list = []
+    for user in users:
+        user_list.append(serialize_user(user))
+    return JsonResponse({'id': chatroom.chatroom_id, 'users': user_list, 'num_unread_mssgs': 0})
 
 @login_required
 @require_POST
 def save_message(request):
     try:
         data = json.loads(request.body)
-        print(data)
         chatroom = ChatRooms.objects.get(chatroom_id=data['chat_room_id'])
-        Messages.objects.create(sender=request.user, chatroom=chatroom, content=data['content'])
-        return HttpResponse('message saved', status=201)
+        message = Messages.objects.create(sender=request.user, chatroom=chatroom, content=data['content'])
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON body.'}, status=400)
     except Exception:
         return JsonResponse({'error': 'An unexpected error has occurred.'}, status=500)
+    return JsonResponse({'sender': serialize_user(request.user),'content': data['content'], 'chat_room': serialize_chatroom(chatroom), 'sent_at': message.sent_at})
     
 @login_required
 @require_GET
@@ -85,10 +88,8 @@ def get_chatroom(request, page):
         
         chatroom_list = []
         for chatroom in chatrooms:
-            recipient = chatroom.users.exclude(id=request.user.id).first()
-            chatroom_obj = {'chat_room_id': chatroom.chatroom_id, 'user': {'id': recipient.id, 'username': recipient.username, 'profile_picture': HOST_PREFIX + recipient.profile_picture.url}, 'num_unread_messages': chatroom.num_unread_mssgs}
-            chatroom_list.append(chatroom_obj)
-            
+            chatroom_list.append(serialize_chatroom(chatroom))
+    
         paginator = Paginator(chatroom_list, 20)
         try:
             chatrooms_page = paginator.page(page)
@@ -126,7 +127,7 @@ def get_chatroom_messages(request, chatroom_id, page):
 
     chatroom_messages = []
     for message in messages_page:
-        message_obj = {'chatroom': chatroom_id, 'content': message.content, 'sender': {'id': message.sender.id, 'username': message.sender.username, 'profile_picture': HOST_PREFIX + message.sender.profile_picture.url}, 'sent_at': message.sent_at}
+        message_obj = {'chatroom': serialize_chatroom(chatroom), 'content': message.content, 'sender': serialize_user(message.sender), 'sent_at': message.sent_at}
         chatroom_messages.append(message_obj)
         
     response = {

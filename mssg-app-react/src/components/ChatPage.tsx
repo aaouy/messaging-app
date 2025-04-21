@@ -6,17 +6,21 @@ import { ChatRoomInterface } from '../types';
 const ChatPage = () => {
   const [chatRooms, setChatRooms] = useState<ChatRoomInterface[]>([]);
   const [notificationSocket, setNotificationSocket] = useState<WebSocket | null>(null); 
-  const username = localStorage.getItem('username');
+  
+  const storedUser = localStorage.getItem('user');
+  if (!storedUser) {
+    throw new Error("Logged in user not found!");
+  }
+  const user = JSON.parse(storedUser);
 
   useEffect(() => {
-    const notificationSocketEndpoint = `ws://localhost:8000/ws/notification/${username}/`;
+    const notificationSocketEndpoint = `ws://localhost:8000/ws/notification/${user.username}/`;
     const newNotificationSocket = new WebSocket(notificationSocketEndpoint);
 
     newNotificationSocket.onopen = () => {
       console.log('Notification socket opened!');
       setNotificationSocket(newNotificationSocket);
     }
-
 
     return () => {
       newNotificationSocket.close();

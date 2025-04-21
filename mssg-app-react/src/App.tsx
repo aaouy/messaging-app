@@ -4,6 +4,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 
 function App() {
+
   return (
       <Router>
       <Routes>
@@ -13,10 +14,9 @@ function App() {
         ></Route>
         <Route
           path="/login"
-          element={<Login />}
+          element={<Login/>}
         ></Route>
-        <Route path="/message" element={<ChatPage />}></Route>
-        <Route path="/message/:selectedChatRoom" element={<ChatPage />}></Route>
+        <Route path="/message/:selectedChatRoom?" element={<ChatPage />}></Route>
       </Routes>
     </Router>
 

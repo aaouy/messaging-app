@@ -1,30 +1,31 @@
-import { MessageInterface } from "../models/message";
-
-export interface CreateChatRoomResponse {
-    user: UserResponse;
-    chatroom_id: string;
-}
-
-export interface UserLoginResponse {
-    user: UserResponse;
-}
-
 export interface GetMessagesResponse {
-    messages: MessageInterface;
-    has_next: string;
-    has_prev: string;
-    total_pages: string;
-    current_page: string;
+    messages: MessageResponse[];
+    has_next: boolean;
+    has_prev: boolean;
+    total_pages: number;
+    current_page: number;
 }
-
-export interface GetChatRoomResponse {
-    chat_room_id: string;
-    user: UserResponse;
-    num_unread_messages: number;
-}
-
 export interface UserResponse {
     id: number;
     username: string;
     profile_picture: string;
+}
+export interface ChatRoomResponse {
+  users: UserResponse[];
+  id: string;
+  num_unread_mssgs: number;
+}
+
+export interface MessageResponse {
+    sender: UserResponse;
+    content: string;
+    chat_room: ChatRoomResponse;
+    sent_at: string;
+}
+
+export interface WebSocketMessageResponse {
+    content: string;
+    sent_at: string;
+    sender: UserResponse;
+    chat_room: ChatRoomResponse;
 }

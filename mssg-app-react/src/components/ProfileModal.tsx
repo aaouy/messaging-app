@@ -7,11 +7,18 @@ import { getCookie } from './utils';
 import { ProfileModalProps } from '../types/index';
 
 
-const ProfileModal = ({ modalRef, setProfilePicture }: ProfileModalProps) => {
+const ProfileModal = ({ modalRef }: ProfileModalProps) => {
   const [imgSrc, setImgSrc] = useState<string>('');
   const [zoom, setZoom] = useState(1);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+
+  const storedUser = localStorage.getItem('user');
+  if (!storedUser) {
+    throw new Error("Logged in user not found!");
+  }
+
+  const user = JSON.parse(storedUser);
 
   const onCropChange = (newCrop: Point) => {
     setCrop(newCrop);
@@ -116,8 +123,8 @@ const ProfileModal = ({ modalRef, setProfilePicture }: ProfileModalProps) => {
         throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
 
       const data = await response.json();
-      setProfilePicture(data.profile_pic);
-      localStorage.setItem('profile_pic', data.profile_pic);
+      user.profilePicture = data.profile_pic;
+      localStorage.setItem('user', user);
 
     } catch (error: any) {
       console.error(error);

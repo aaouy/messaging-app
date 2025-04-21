@@ -1,6 +1,7 @@
 import json, datetime
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
+from .utils import serialize_user
 
 HOST_PREFIX = 'http://localhost:8000'
 
@@ -15,30 +16,31 @@ class ChatConsumer(WebsocketConsumer):
         self.accept() 
     
     def receive(self, text_data):
-        content = json.loads(text_data)['content']
+        data_dict = json.loads(text_data)
+        content = data_dict['content']
         sender = self.scope['user']
+        chatroom = data_dict['chat_room']
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
                 'type': 'chat_message',
-                'sender': {'id': sender.id, 'username': sender.username, 'profile_picture': HOST_PREFIX + sender.profile_picture.url},
+                'sender': serialize_user(sender),
                 'content': content,
+                'chat_room': chatroom
             }
         )
             
     def chat_message(self, event):
         content = event['content']
         sender = event['sender']
-        profile_pic = sender['profile_picture']
+        chatroom = event['chat_room']
         
         response = {
-            'type': 'chat',
             'content': content,
             'sent_at': str(datetime.datetime.now(datetime.timezone.utc)),
+            'sender': sender,
+            'chat_room': chatroom
         }
-        
-        response['sender'] = sender
-        response['profile_picture'] = profile_pic
         self.send(text_data=json.dumps(response))
         
 class NotificationConsumer(WebsocketConsumer):        
@@ -53,14 +55,14 @@ class NotificationConsumer(WebsocketConsumer):
     
     def receive(self, text_data):
         text_data_dict = json.loads(text_data)
-        recipient = text_data_dict['recipient']
-        recipient_username = recipient['username']
+        recipients = text_data_dict['recipient']
+        recipient_username = recipients[0]['username']
         chatroom_id = text_data_dict['chat_room_id']
         async_to_sync(self.channel_layer.group_send)(
             f'notification_{recipient_username}',
             {
                 'type': 'send_notification',
-                'recipient': recipient,
+                'recipient': recipients[0],
                 'chatroom_id': chatroom_id,
             }
         )
@@ -69,7 +71,6 @@ class NotificationConsumer(WebsocketConsumer):
         recipient = event['recipient']
         chatroom_id = event['chatroom_id']
         response = {
-            'type': 'notification',
             'recipient': recipient,
             'chatroom_id': chatroom_id,
         }
@@ -87,24 +88,26 @@ class NewChatroom(WebsocketConsumer):
     
     def receive(self, text_data):
         text_data_dict = json.loads(text_data)
-        recipient_username = text_data_dict['user']['username']
-        chatroom_id = text_data_dict['chatRoomId']
-        async_to_sync(self.channel_layer.group_send)(
-            f'chatroom_{recipient_username}',
-            {
-                'type': 'new_chatroom',
-                'chatroom_id': chatroom_id,
-                'sender': self.scope['user']
-            }
-        )
+        users = text_data_dict['users']
+        chatroom_id = text_data_dict['id']
+        for user in users:
+            username = user['username']
+            async_to_sync(self.channel_layer.group_send)(
+                f'chatroom_{username}',
+                {
+                    'type': 'new_chatroom',
+                    'chatroom_id': chatroom_id,
+                    'users': users,
+                }
+            )
             
     def new_chatroom(self, event):
         chatroom_id = event['chatroom_id']
-        sender = event['sender']
+        users = event['users']
         response = {
-            'type': 'chatroom',
-            'chatroom_id': chatroom_id,
-            'sender': {'id': sender.id, 'sender': sender.username, 'profile_picture': HOST_PREFIX + sender.profile_picture.url}
+            'id': chatroom_id,
+            'users': users,
+            'num_unread_mssgs': 0
         }
         self.send(text_data=json.dumps(response))
 

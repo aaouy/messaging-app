@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AddUserModalProps, ChatRoomInterface } from '../types/index';
+import { AddUserModalProps, ChatRoomInterface, CreateChatRoomRequest, ChatRoomResponse } from '../types/index';
 import { convertSnakeToCamel, getCookie } from './utils';
 
 const AddUserModal = ({ chatRoomSocket, modalRef, addChatRoom }: AddUserModalProps) => {
@@ -16,11 +16,20 @@ const AddUserModal = ({ chatRoomSocket, modalRef, addChatRoom }: AddUserModalPro
     event.preventDefault();
     const createChatRoomUrl = "http://localhost:8000/chatroom/create/";
     try {
-
       const csrfCookie = getCookie("csrftoken");
       
       if (!csrfCookie) {
-        throw Error("The CSRF token could not be fetched from the browser!");
+        throw new Error("The CSRF token could not be fetched from the browser!");
+      }
+
+      const storedUser = localStorage.getItem('user');
+      if (!storedUser) {
+        throw new Error("Logged in user not found!");
+      }
+
+      const user = JSON.parse(storedUser);
+      const body: CreateChatRoomRequest = {
+        users: [user.username, username]
       }
 
       const response = await fetch(createChatRoomUrl, {
@@ -30,30 +39,29 @@ const AddUserModal = ({ chatRoomSocket, modalRef, addChatRoom }: AddUserModalPro
           "Content-Type": "application/json",
           "X-CSRFToken": csrfCookie,
         },
-        body: JSON.stringify({ name: username })
+        body: JSON.stringify(body)
       })
       
       if (!response.ok) {
         throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data: ChatRoomResponse = await response.json();
       const transformedData = convertSnakeToCamel(data);
+      console.log(transformedData);
 
       const newChatRoom: ChatRoomInterface = {
-        user: transformedData.user,
-        chatRoomId: transformedData.chatroomId,
+        users: transformedData.users,
+        id: transformedData.id,
         numUnreadMssgs: transformedData.numUnreadMssgs
       };
 
-      console.log(newChatRoom);
-
-      chatRoomSocket?.send(JSON.stringify(newChatRoom));
+      chatRoomSocket?.send(JSON.stringify(data));
       setUserExists(true);
       setUsername('');
       addChatRoom(newChatRoom);
       modalRef.current?.close();
-      navigate(`/message/${data.chatroom_id}`);
+      navigate(`/message/${data.id}`);
 
     } catch (error: any) {
       setUserExists(false);

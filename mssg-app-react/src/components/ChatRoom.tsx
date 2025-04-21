@@ -17,12 +17,12 @@ const ChatRoom = ({ numUnreadMssgs, chatRoomName, chatRoomId, profilePicture, ha
       onClick={onClickHandler}
       className={`${selectedChatRoom === chatRoomId ? "bg-[#40444b]": ""} flex items-center h-[10vh] cursor-pointer hover:bg-[#40444b] p-2 text-[#d3d3d3] rounded-lg mb-[5px]`}
     >
-      <div className="w-[40px] h-[40px]">
-        <img className="rounded-[50%]" src={profilePicture} alt="profile-pic" />
+      <div className="w-[40px] h-[40px] mr-5">
+        <img className="w-[40px] h-[40px] rounded-[50%]" src={profilePicture} alt="profile-pic" />
       </div>
       <div
         className={`${numUnreadMssgs > 0 && selectedChatRoom !== chatRoomId ? 'visible' : 'invisible'}`}
-      > ̰
+      >
         {numUnreadMssgs}
       </div>
       <h3>{chatRoomName}</h3>

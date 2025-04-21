@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { ChatInputProps } from '../types';
+import { ChatInputProps, MessageRequest, MessageResponse } from '../types';
 import { getCookie } from './utils';
 
-const ChatInput = ({notificationSocket, messageSocket, chatRooms, setChatRooms}: ChatInputProps) => {
+const ChatInput = ({ notificationSocket, messageSocket, chatRooms, setChatRooms}: ChatInputProps) => {
   const [message, setMessage] = useState('');
   const { selectedChatRoom } = useParams();
 
@@ -14,10 +14,9 @@ const ChatInput = ({notificationSocket, messageSocket, chatRooms, setChatRooms}:
   const handleMessageSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const postMessageUrl = 'http://localhost:8000/message/save/';
-    const messageData = { content: message, chat_room_id: selectedChatRoom };
+    const body: MessageRequest = { content: message, chat_room_id: selectedChatRoom };
 
     try {
-
       const csrfCookie = getCookie("csrftoken");
 
       if (!csrfCookie) {
@@ -31,30 +30,42 @@ const ChatInput = ({notificationSocket, messageSocket, chatRooms, setChatRooms}:
           "Content-Type": "application/json",
           "X-CSRFToken": csrfCookie
         },
-        body: JSON.stringify(messageData)
+        body: JSON.stringify(body)
       })
 
       if (!response.ok) {
         throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
       }
 
+      const data: MessageResponse = await response.json();
+      console.log(data);
       setMessage('');
       console.log('Message saved!');
 
       if (notificationSocket && messageSocket && message.trim()) {
-        messageSocket.send(JSON.stringify(messageData));
+        messageSocket.send(JSON.stringify(data));
 
-        const index = chatRooms.findIndex((chatRoom) => chatRoom.chatRoomId === selectedChatRoom);
-        const recipient = chatRooms[index].user;
-        notificationSocket.send(JSON.stringify({ recipient: recipient, chat_room_id: selectedChatRoom }));
-
-        const chatroom = chatRooms[index];
-        setChatRooms((oldChatRooms) => [
-          chatroom,
-          ...oldChatRooms.slice(0, index),
-          ...oldChatRooms.slice(index + 1),
-        ]);
+      const storedUser = localStorage.getItem('user');
+      if (!storedUser) {
+        throw new Error("Logged in user not found!");
       }
+
+      const user = JSON.parse(storedUser);
+
+      const index = chatRooms.findIndex((chatRoom) => chatRoom.id === selectedChatRoom);
+      const members = chatRooms[index].users;
+      const recipients = members.filter((member) => member.id !== user.id)
+
+      notificationSocket.send(JSON.stringify({ recipient: recipients, chat_room_id: selectedChatRoom }));
+
+      // Might not be necessary cuz notification socket now includes all sockets (incl user who sent the message.)
+      const chatroom = chatRooms[index]; 
+      setChatRooms((oldChatRooms) => [
+        chatroom,
+        ...oldChatRooms.slice(0, index),
+        ...oldChatRooms.slice(index + 1),
+      ]);
+    }
 
     } catch (error: any) {
       console.error(error);

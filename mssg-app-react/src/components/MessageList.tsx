@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MessageInterface, MessageListProps } from '../types';
+import { WebSocketMessageResponse, MessageInterface, MessageListProps, GetMessagesResponse } from '../types';
 import Message from './Message';
 import { useParams } from 'react-router-dom';
 import { convertSnakeToCamel } from './utils';
@@ -16,6 +16,7 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
   useEffect(() => {
     setMessages([]);
     getMessages(1);
+
     return () => {
       lastMessageRef.current = null;
     }
@@ -25,14 +26,14 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
     if (!messageSocket) return;
 
     messageSocket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+      const data: WebSocketMessageResponse = JSON.parse(event.data);
       const transformedData = convertSnakeToCamel(data);
 
       const newMessage: MessageInterface = {
         sender: undefined,
-        content: transformedData.content,
-        sentAt: transformedData.sentAt,
-        chatRoomId: selectedChatRoom
+        content: data.content,
+        sentAt: data.sent_at,
+        chatRoom: transformedData.chatRoom
       }
 
       if (!lastMessageRef.current || (lastMessageRef.current && lastMessageRef.current.sender && (transformedData.sender.id !== lastMessageRef.current.sender.id)) || (lastMessageRef.current && newMessage.sentAt && lastMessageRef.current.sentAt && (new Date(newMessage.sentAt).getTime() - new Date(lastMessageRef.current.sentAt).getTime() >= 60 * 1000))) {
@@ -50,7 +51,6 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
   const getMessages = async (page: number) => {
     const getMessagesUrl = `http://localhost:8000/messages/${selectedChatRoom}/${page}/`;
     try {
-
       const response = await fetch(getMessagesUrl, {
         method: "GET",
         credentials: 'include'
@@ -59,24 +59,23 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
       if (!response.ok)
         throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
 
-      const data = await response.json();
-      const loadedMessages = data.messages // newest mssgs at the front.
+      const data: GetMessagesResponse = await response.json();
+      const transformedData = convertSnakeToCamel(data);
+      const loadedMessages = transformedData.messages // newest mssgs at the front.
 
       if (loadedMessages.length === 0) return;
 
       const latestMessage = loadedMessages[0];
-      console.log(latestMessage);
-      lastMessageRef.current = {sender: convertSnakeToCamel(latestMessage).user, content: latestMessage.content, sentAt: latestMessage.sent_at, chatRoomId: selectedChatRoom};
+      lastMessageRef.current = {sender: latestMessage.user, content: latestMessage.content, sentAt: latestMessage.sentAt, chatRoom: latestMessage.chatRoom};
 
       for (let i = 0; i < loadedMessages.length; i++) {
-        let newMessage: MessageInterface = {sender: undefined, content: loadedMessages[i].content, sentAt: undefined, chatRoomId: selectedChatRoom};
-        if (i === loadedMessages.length - 1 || (loadedMessages[i].sender.id != loadedMessages[i + 1].sender.id || (new Date(loadedMessages[i].sent_at).getTime() - new Date(loadedMessages[i + 1].sent_at).getTime()) >= 60 * 1000)) {
-          const sender = convertSnakeToCamel(loadedMessages[i]).sender;
+        let newMessage: MessageInterface = {sender: undefined, content: loadedMessages[i].content, sentAt: undefined, chatRoom: loadedMessages[i].chatRoom};
+        if (i === loadedMessages.length - 1 || (loadedMessages[i].sender.id != loadedMessages[i + 1].sender.id || (new Date(loadedMessages[i].sentAt).getTime() - new Date(loadedMessages[i + 1].sentAt).getTime()) >= 60 * 1000)) {
           newMessage = {
-            sender: sender,
-            sentAt: loadedMessages[i].sent_at,
+            sender: loadedMessages[i].sender,
+            sentAt: loadedMessages[i].sentAt,
             content: loadedMessages[i].content,
-            chatRoomId: selectedChatRoom
+            chatRoom: loadedMessages[i].chatRoom
           }
         }
 

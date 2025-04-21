@@ -1,7 +1,7 @@
-import User from "./user";
+import { User } from "./user";
 
 export interface ChatRoomInterface {
-  user: User;
-  chatRoomId: string;
+  users: User[];
+  id: string;
   numUnreadMssgs: number;
 }

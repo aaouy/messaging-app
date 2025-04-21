@@ -1,4 +1,4 @@
-import { ChatRoomInterface, ChatroomListProps, GetChatRoomResponse } from '../types/index.ts';
+import { ChatRoomInterface, ChatroomListProps, ChatRoomResponse, User } from '../types/index.ts';
 import { useParams } from 'react-router-dom';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import ChatRoom from './ChatRoom.tsx';
@@ -15,36 +15,43 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { selectedChatRoom } = useParams();
   const [chatroomSocket, setChatroomSocket] = useState<WebSocket | null>(null);
-  const username = localStorage.getItem('username');
+
+  const storedUser = localStorage.getItem('user');
+  if (!storedUser) {
+    throw new Error("Logged in user not found!");
+  }
+
+  const loggedInUser: User = JSON.parse(storedUser);
+
+    const getChatroomInfo = (chatRoom: ChatRoomInterface) => {
+      const users = chatRoom.users;
+      const [user] = users.filter((user: User) => loggedInUser.id !== user.id)
+      return user;
+    } 
 
   const getChatrooms = async (page: number) => {
     const chatRoomUrl = `http://localhost:8000/chatroom/${page}`;
     try {
-
       const response = await fetch(chatRoomUrl, {
         credentials: "include",
         method: "GET",
       })
-
-      console.log(response);
 
       if (!response.ok)
         throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
 
       const data = await response.json();
 
-      data.chatrooms.forEach((chatRoomResponse: GetChatRoomResponse) => {
+      data.chatrooms.forEach((chatRoomResponse: ChatRoomResponse) => {
         const transformedData = convertSnakeToCamel(chatRoomResponse)
         const chatRoom : ChatRoomInterface = {
-          user: transformedData.user,
-          chatRoomId: transformedData.chatRoomId,
+          users: transformedData.users,
+          id: transformedData.id,
           numUnreadMssgs: transformedData.numUnreadMessages
         }
-
         setChatRooms((chatRooms) => [...chatRooms, chatRoom]);
         currentPageRef.current = data.current_page;
         hasNextRef.current = data.has_next;
-        console.log(hasNextRef.current);
 
       });
 
@@ -58,10 +65,8 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
   };
 
   useEffect(() => {
-
     getChatrooms(1);
-
-    const newChatroomSocketUrl = `ws://localhost:8000/ws/chatroom/${username}/`;
+    const newChatroomSocketUrl = `ws://localhost:8000/ws/chatroom/${loggedInUser.username}/`;
     const newChatroomSocket = new WebSocket(newChatroomSocketUrl);
 
     newChatroomSocket.onopen = () => {
@@ -70,17 +75,16 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
     };
 
     newChatroomSocket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+      const data: ChatRoomResponse = JSON.parse(event.data);
       const transformedData = convertSnakeToCamel(data);
 
       const chatroom : ChatRoomInterface = {
-        user: transformedData.sender,
-        chatRoomId: transformedData.chatroom_id,
+        users: transformedData.users,
+        id: transformedData.id,
         numUnreadMssgs: 1,
       }
       addChatRoom(chatroom);
     }
-
     return () => {
       newChatroomSocket.close();
     }
@@ -93,10 +97,10 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
     notificationSocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      const index = chatRooms.findIndex((chatRoom) => chatRoom.chatRoomId === data.chat_room_id);
+      const index = chatRooms.findIndex((chatRoom) => chatRoom.id === data.chat_room_id);
       const chatRoom = chatRooms[index];
 
-      if (selectedChatRoom !== chatRoom.chatRoomId) chatRoom.numUnreadMssgs += 1; // if not the currently selected chatroom, add 1. 
+      if (selectedChatRoom !== chatRoom.id) chatRoom.numUnreadMssgs += 1; // if not the currently selected chatroom, add 1. 
 
       setChatRooms((oldChatRooms) => [
         chatRoom,
@@ -134,7 +138,7 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
   const handleChatRoomSelect = (id: string) => {
     setChatRooms((oldChatRooms) =>
       oldChatRooms.map((chatRoom) =>
-        chatRoom.chatRoomId === id ? { ...chatRoom, unread_messages: 0 } : chatRoom
+        chatRoom.id === id ? { ...chatRoom, unread_messages: 0 } : chatRoom
       )
     );
   };
@@ -153,16 +157,16 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
           <ChatRoom
             lastChatRoomref={index === chatRooms.length - 1 ? lastChatRoomRef : null}
             numUnreadMssgs={chatRoom.numUnreadMssgs}
-            chatRoomName={chatRoom.user.username}
-            chatRoomId={chatRoom.chatRoomId}
-            profilePicture={chatRoom.user.profilePicture}
+            chatRoomName={getChatroomInfo(chatRoom).username}
+            chatRoomId={chatRoom.id}
+            profilePicture={getChatroomInfo(chatRoom).profilePicture}
             handleActiveId={handleChatRoomSelect}
             key={index}
           />
         ))}
         {isLoading && <p>Loading...</p>}
       </div>
-      <ProfileBar />
+      <ProfileBar/>
     </div>
   );
 };

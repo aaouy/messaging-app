@@ -10,7 +10,6 @@ class Profile(AbstractUser):
 class ChatRooms(models.Model):
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=False)
     chatroom_id = models.UUIDField(default=uuid.uuid4, editable=False)
-    name = models.CharField(blank=False)
     created_at = models.DateTimeField(default=timezone.now)
     num_unread_mssgs = models.IntegerField(default=0)
 

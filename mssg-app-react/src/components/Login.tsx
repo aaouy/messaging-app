@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCookie } from './utils';
+import { User } from '../types';
+import { convertSnakeToCamel } from './utils';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -10,7 +12,6 @@ const Login = () => {
   useEffect(() => {
     const getCsrfToken = async () => {
       try {
-
         const response = await fetch('http://localhost:8000/user/get-csrf-token/', {
           method: "GET",
           credentials: 'include'
@@ -29,13 +30,13 @@ const Login = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const loginUrl = "http://localhost:8000/user/login/";
-    const userData = { username: username, password: password };
     try {
-
       const csrfCookie = getCookie("csrftoken");
       if (!csrfCookie)
         throw new Error("CSRF cookie could not be obtained from the browser!");
+
+      const loginUrl = "http://localhost:8000/user/login/";
+      const userData = { username: username, password: password };
 
       const response = await fetch(loginUrl, {
         method: "POST",
@@ -52,14 +53,17 @@ const Login = () => {
       }
 
       const data = await response.json();
-
-      localStorage.setItem('username', data.user.username);
-      localStorage.setItem('profile_pic', data.user.profile_picture);
+      const transformedData = convertSnakeToCamel(data);
+      
+      const loggedInUser: User = transformedData.user;
+      console.log('Successfully logged in.');
+      localStorage.setItem("user", JSON.stringify(loggedInUser));
       navigate('/message');
 
     } catch (error: any) {
       console.error(error);
     }
+
   };
 
   const updateUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
