@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AddUserModalProps, ChatRoomInterface, CreateChatRoomRequest, ChatRoomResponse } from '../types/index';
-import { convertSnakeToCamel, getCookie } from './utils';
+import { AddUserModalProps, CreateChatRoomRequest, ChatRoomResponse, User } from '../types/index';
+import { getCookie } from './utils';
 
-const AddUserModal = ({ chatRoomSocket, modalRef, addChatRoom }: AddUserModalProps) => {
+const AddUserModal = ({ chatRoomSocket, modalRef }: AddUserModalProps) => {
   const [username, setUsername] = useState<string>('');
   const [userExists, setUserExists] = useState<boolean>(true);
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const AddUserModal = ({ chatRoomSocket, modalRef, addChatRoom }: AddUserModalPro
         throw new Error("Logged in user not found!");
       }
 
-      const user = JSON.parse(storedUser);
+      const user: User = JSON.parse(storedUser);
       const body: CreateChatRoomRequest = {
         users: [user.username, username]
       }
@@ -47,19 +47,9 @@ const AddUserModal = ({ chatRoomSocket, modalRef, addChatRoom }: AddUserModalPro
       }
 
       const data: ChatRoomResponse = await response.json();
-      const transformedData = convertSnakeToCamel(data);
-      console.log(transformedData);
-
-      const newChatRoom: ChatRoomInterface = {
-        users: transformedData.users,
-        id: transformedData.id,
-        numUnreadMssgs: transformedData.numUnreadMssgs
-      };
-
       chatRoomSocket?.send(JSON.stringify(data));
       setUserExists(true);
       setUsername('');
-      addChatRoom(newChatRoom);
       modalRef.current?.close();
       navigate(`/message/${data.id}`);
 

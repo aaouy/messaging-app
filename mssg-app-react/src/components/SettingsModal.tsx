@@ -1,4 +1,4 @@
-import { SettingsModalProps } from "../types/index";
+import { SettingsModalProps } from "../types";
 import { useNavigate } from "react-router-dom";
 import { getCookie } from "./utils";
 

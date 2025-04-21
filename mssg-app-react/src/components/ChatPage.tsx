@@ -1,17 +1,17 @@
 import ChatWindow from './ChatWindow';
 import ChatRoomList from './ChatRoomList';
 import { useState, useEffect } from 'react';
-import { ChatRoomInterface } from '../types';
+import { ChatRoomInterface, User } from '../types';
 
 const ChatPage = () => {
   const [chatRooms, setChatRooms] = useState<ChatRoomInterface[]>([]);
   const [notificationSocket, setNotificationSocket] = useState<WebSocket | null>(null); 
   
-  const storedUser = localStorage.getItem('user');
+  const storedUser: string | null = localStorage.getItem('user');
   if (!storedUser) {
     throw new Error("Logged in user not found!");
   }
-  const user = JSON.parse(storedUser);
+  const user: User = JSON.parse(storedUser);
 
   useEffect(() => {
     const notificationSocketEndpoint = `ws://localhost:8000/ws/notification/${user.username}/`;
@@ -30,7 +30,7 @@ const ChatPage = () => {
   return (
     <div className="flex h-full">
       <ChatRoomList notificationSocket={notificationSocket} chatRooms={chatRooms} setChatRooms={setChatRooms}/>
-      <ChatWindow notificationSocket={notificationSocket} chatRooms={chatRooms} setChatRooms={setChatRooms} />
+      <ChatWindow notificationSocket={notificationSocket} chatRooms={chatRooms} />
     </div>
   );
 };

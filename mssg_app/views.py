@@ -99,7 +99,7 @@ def get_chatroom(request, page):
             chatrooms_page = []
             
         response = {
-            'chatrooms': list(chatrooms_page),
+            'chat_rooms': list(chatrooms_page),
             'has_next': chatrooms_page.has_next() if chatrooms_page else False,
             'total_pages': paginator.num_pages,
             'current_page': int(page),

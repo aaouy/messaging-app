@@ -29,3 +29,10 @@ export interface WebSocketMessageResponse {
     sender: UserResponse;
     chat_room: ChatRoomResponse;
 }
+
+export interface GetChatRoommResponse {
+    chat_rooms: ChatRoomResponse[];
+    has_next: boolean;
+    total_pages: number;
+    current_page: number;
+}

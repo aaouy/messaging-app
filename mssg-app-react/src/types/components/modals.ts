@@ -1,8 +1,5 @@
-import { ChatRoomInterface } from "../models/chatroom";
-
 export interface AddUserModalProps {
   modalRef: React.RefObject<HTMLDialogElement | null>;
-  addChatRoom: (chatRoom: ChatRoomInterface) => void;
   chatRoomSocket: WebSocket | null;
 }
 

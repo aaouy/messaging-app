@@ -142,8 +142,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'mssg_app.Profile'
 
+# Cannot set allowed origins to * if requests contain credentials (e.g. cookies). Browser will block the response.
+
 CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
-CORS_ALLOW_CREDENTIALS = True # setting that allows cross origin http requests to contain credentials e.g. cookies
+
+# Response header which tells the browser whether the server allows credentials to be included in cross-origin HTTP requests.
+# This header will always be set to false/ignored if the request origin is not an allowed origin. 
+
+CORS_ALLOW_CREDENTIALS = True 
+
+# CSRF cookie is set in the browser. The value is fetched explicitly with js and included in all unsafe requests.
+# When an unsafe request is made, the csrf value is explicitly included as a header and the server compares its value with the CSRF cookie that was implicitly sent in the request.
+
 CSRF_TRUSTED_ORIGINS = ['http://localhost:5173'] # list of origins for unsafe requests (e.g. POST)
 
-#SameSite cookies are only sent if the origin of the request is the same as the cookie's origin site or trusted origins.
+# SameSite cookies are only sent if the origin of the request is the same as the cookie's origin site or trusted origins.

@@ -55,24 +55,22 @@ class NotificationConsumer(WebsocketConsumer):
     
     def receive(self, text_data):
         text_data_dict = json.loads(text_data)
-        recipients = text_data_dict['recipient']
-        recipient_username = recipients[0]['username']
+        recipients = text_data_dict['recipients']
         chatroom_id = text_data_dict['chat_room_id']
-        async_to_sync(self.channel_layer.group_send)(
-            f'notification_{recipient_username}',
-            {
-                'type': 'send_notification',
-                'recipient': recipients[0],
-                'chatroom_id': chatroom_id,
-            }
-        )
+        for recipient in recipients:
+            username = recipient['username']
+            async_to_sync(self.channel_layer.group_send)(
+                f'notification_{username}',
+                {
+                    'type': 'send_notification',
+                    'chatroom_id': chatroom_id,
+                }
+            )
             
     def send_notification(self, event):
-        recipient = event['recipient']
         chatroom_id = event['chatroom_id']
         response = {
-            'recipient': recipient,
-            'chatroom_id': chatroom_id,
+            'chat_room_id': chatroom_id,
         }
         self.send(text_data=json.dumps(response))
         

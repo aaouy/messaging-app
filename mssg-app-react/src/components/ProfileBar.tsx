@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import ProfileModal from './ProfileModal.tsx';
 import SettingsModal from './SettingsModal.tsx';
 import SettingsIcon from "../assets/settings-icon.svg?react";
+import { User } from '../types';
 
 const ProfileBar = () => {
   const profileModalRef = useRef<HTMLDialogElement>(null);
@@ -12,7 +13,7 @@ const ProfileBar = () => {
     throw new Error("Logged in user not found!");
   }
 
-  const user = JSON.parse(storedUser);
+  const user: User = JSON.parse(storedUser);
 
   const handleProfileClick = (event: React.MouseEvent<HTMLImageElement>) => {
     event.preventDefault();

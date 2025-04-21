@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCookie } from './utils';
 import { User } from '../types';
-import { convertSnakeToCamel } from './utils';
+import { convertSnakeToCamel, getCookie } from './utils';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -14,7 +13,7 @@ const Login = () => {
       try {
         const response = await fetch('http://localhost:8000/user/get-csrf-token/', {
           method: "GET",
-          credentials: 'include'
+          credentials: 'include',
         })
         
         if (!response.ok)

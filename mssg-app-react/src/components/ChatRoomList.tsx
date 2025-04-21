@@ -1,4 +1,4 @@
-import { ChatRoomInterface, ChatroomListProps, ChatRoomResponse, User } from '../types/index.ts';
+import { ChatRoomInterface, ChatroomListProps, ChatRoomResponse, GetChatRoommResponse, User } from '../types';
 import { useParams } from 'react-router-dom';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import ChatRoom from './ChatRoom.tsx';
@@ -30,29 +30,26 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
     } 
 
   const getChatrooms = async (page: number) => {
-    const chatRoomUrl = `http://localhost:8000/chatroom/${page}`;
+    const chatRoomUrl = `http://localhost:8000/chatroom/${page}/`;
     try {
       const response = await fetch(chatRoomUrl, {
         credentials: "include",
         method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
       })
 
       if (!response.ok)
         throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
 
-      const data = await response.json();
+      const data: GetChatRoommResponse = await response.json();
+      const transformedData = convertSnakeToCamel(data);
 
-      data.chatrooms.forEach((chatRoomResponse: ChatRoomResponse) => {
-        const transformedData = convertSnakeToCamel(chatRoomResponse)
-        const chatRoom : ChatRoomInterface = {
-          users: transformedData.users,
-          id: transformedData.id,
-          numUnreadMssgs: transformedData.numUnreadMessages
-        }
+      transformedData.chatRooms.forEach((chatRoom: ChatRoomInterface) => {
         setChatRooms((chatRooms) => [...chatRooms, chatRoom]);
-        currentPageRef.current = data.current_page;
-        hasNextRef.current = data.has_next;
-
+        currentPageRef.current = transformedData.currentPage;
+        hasNextRef.current = transformedData.hasNext;
       });
 
     } catch (error: any) {
@@ -81,7 +78,7 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
       const chatroom : ChatRoomInterface = {
         users: transformedData.users,
         id: transformedData.id,
-        numUnreadMssgs: 1,
+        numUnreadMssgs: 0,
       }
       addChatRoom(chatroom);
     }
@@ -151,7 +148,7 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
           <NewMessageIcon className="w-7 h-7 cursor-pointer hover:scale-[1.1]"></NewMessageIcon>
         </button>
       </div>
-      <AddUserModal chatRoomSocket={chatroomSocket} addChatRoom={addChatRoom} modalRef={modalRef} />
+      <AddUserModal chatRoomSocket={chatroomSocket} modalRef={modalRef} />
       <div className="overflow-scroll p-1 h-[82vh]">
         {chatRooms.map((chatRoom, index) => (
           <ChatRoom

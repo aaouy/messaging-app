@@ -1,15 +1,13 @@
 import Cropper from 'react-easy-crop';
-import { Point } from 'react-easy-crop';
-import { useCallback } from 'react';
-import { Area } from 'react-easy-crop';
-import { useState } from 'react';
+import { Point, Area } from 'react-easy-crop';
+import { useState, useCallback } from 'react';
 import { getCookie } from './utils';
-import { ProfileModalProps } from '../types/index';
+import { ProfileModalProps } from '../types';
 
 
 const ProfileModal = ({ modalRef }: ProfileModalProps) => {
   const [imgSrc, setImgSrc] = useState<string>('');
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState<number>(1);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 

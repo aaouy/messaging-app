@@ -4,7 +4,7 @@ import { ChatWindowProps } from '../types';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-const ChatWindow = ({ notificationSocket, chatRooms, setChatRooms}: ChatWindowProps) => {
+const ChatWindow = ({ notificationSocket, chatRooms}: ChatWindowProps) => {
   const { selectedChatRoom } = useParams();
   const [messageSocket, setMessageSocket] = useState<WebSocket | null>(null);
 
@@ -30,7 +30,6 @@ const ChatWindow = ({ notificationSocket, chatRooms, setChatRooms}: ChatWindowPr
       <ChatInput
         notificationSocket={notificationSocket}
         chatRooms={chatRooms}
-        setChatRooms={setChatRooms}
         messageSocket={messageSocket}
       />
     </div>
