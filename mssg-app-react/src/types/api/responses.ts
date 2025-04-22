@@ -30,7 +30,7 @@ export interface WebSocketMessageResponse {
     chat_room: ChatRoomResponse;
 }
 
-export interface GetChatRoommResponse {
+export interface GetChatRoomResponse {
     chat_rooms: ChatRoomResponse[];
     has_next: boolean;
     total_pages: number;

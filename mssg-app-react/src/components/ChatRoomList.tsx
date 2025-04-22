@@ -1,4 +1,4 @@
-import { ChatRoomInterface, ChatroomListProps, ChatRoomResponse, GetChatRoommResponse, User } from '../types';
+import { ChatRoomInterface, ChatroomListProps, ChatRoomResponse, GetChatRoomResponse, User } from '../types';
 import { useParams } from 'react-router-dom';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import ChatRoom from './ChatRoom.tsx';
@@ -43,7 +43,11 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
       if (!response.ok)
         throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
 
-      const data: GetChatRoommResponse = await response.json();
+      const data: GetChatRoomResponse = await response.json();
+
+      if (data.chat_rooms.length === 0)
+        return;
+
       const transformedData = convertSnakeToCamel(data);
 
       transformedData.chatRooms.forEach((chatRoom: ChatRoomInterface) => {

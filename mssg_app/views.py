@@ -84,7 +84,7 @@ def get_chatroom(request, page):
     try:
         chatrooms = ChatRooms.objects.filter(users=request.user).annotate(latest_mssg_time=Max('messages__sent_at')).order_by(F('latest_mssg_time').desc(nulls_last=True), '-created_at')
         if not chatrooms:
-            return JsonResponse({'chatrooms': [], 'message': 'No rooms'}, status=200)
+            return JsonResponse({'chat_rooms': [], 'has_next': False, 'total_pages': 0, 'current_page': 0}, status=200)
         
         chatroom_list = []
         for chatroom in chatrooms:
