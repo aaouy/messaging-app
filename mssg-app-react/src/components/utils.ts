@@ -1,4 +1,4 @@
-import DOMPurify from 'dompurify';
+import { MessageContentInterface, UrlInterface } from '../types';
 
 export function getCookie(name: string) {
   let cookieValue = null;
@@ -15,14 +15,28 @@ export function getCookie(name: string) {
   return cookieValue;
 }
 
-export const detectLinks = (text: string): string => {
-    const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]|\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-    const linkedText = text.replace(urlRegex, (url) => {
-        const fullUrl = url.startsWith('www.') ? `http://${url}` : url;
-        return `<a href="${fullUrl}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-    });
-    return DOMPurify.sanitize(linkedText);
-};
+export const linkify = (text: string) => {
+  const urlRegex = /(?:https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi;
+  const noUrlText = text.split(urlRegex);
+  const urls = text.match(urlRegex) || [];
+  
+  const res: (MessageContentInterface | UrlInterface)[]  = []
+  noUrlText.forEach((value, index) => {
+    if (value)
+      res.push({type: "text", content: value});
+    if (urls[index]) {
+      const url = urls[index];
+      let href = url;
+      if (url.startsWith("www."))
+        href = `https://${url}`;
+      res.push({type: "link", content: url, href: href});
+    }
+  })
+
+  return res
+}
+
+
 
 const toCamelCase = (str: string): string => {
   return str.replace(/_([a-z])/g, (match, group1) => group1.toUpperCase());

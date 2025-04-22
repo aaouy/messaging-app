@@ -1,8 +1,8 @@
 import { MessageProps } from '../types';
-import { detectLinks } from './utils';
+import { linkify } from './utils';
 
-const Message = ({ children, sender, sentAt }: MessageProps) => {
-  const linkedContent = detectLinks(children);
+const Message = ({ content, sender, sentAt }: MessageProps) => {
+  const linkedContent = linkify(content);
 
   const handleDate = (sentAt: string | undefined) => {
     const today = new Date();
@@ -46,7 +46,7 @@ const Message = ({ children, sender, sentAt }: MessageProps) => {
               <p className="text-[10px] ml-[7px] mr-[7px] text-[#a9a9a9]">{handleDate(sentAt)}</p>
             </div>
           )}
-          <p className="text-[15px] break-all" dangerouslySetInnerHTML={{ __html: linkedContent }}></p>
+          <p className="text-[15px] break-all">{linkedContent.map((val, key) => val.type === 'text' ? val.content : <a href={val.href} key={key} target='_blank' className='text-[#8AB4F8] hover:underline'>{val.content}</a>)}</p>
         </div>
       </div>
     );

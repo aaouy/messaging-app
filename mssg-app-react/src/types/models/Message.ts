@@ -7,3 +7,14 @@ export interface MessageInterface {
   sentAt: string | undefined;
   chatRoom: ChatRoomInterface;
 }
+
+export interface MessageContentInterface {
+  type: 'text';
+  content: string;
+}
+
+export interface UrlInterface {
+  type: 'link';
+  content: string;
+  href: string;
+}
