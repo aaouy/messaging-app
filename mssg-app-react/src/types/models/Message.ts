@@ -1,5 +1,5 @@
 import { ChatRoomInterface } from "./chatroom";
-import { User } from "./user";
+import { User } from "./User";
 
 export interface MessageInterface {
   sender: User | undefined;
