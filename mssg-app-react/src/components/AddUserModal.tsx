@@ -3,10 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { AddUserModalProps, CreateChatRoomRequest, ChatRoomResponse, User } from '../types/index';
 import { getCookie } from './utils';
 
-const AddUserModal = ({ chatRoomSocket, modalRef }: AddUserModalProps) => {
+const AddUserModal = ({ chatRoomSocket, modalRef, chatRooms }: AddUserModalProps) => {
   const [username, setUsername] = useState<string>('');
   const [userExists, setUserExists] = useState<boolean>(true);
   const navigate = useNavigate();
+
+  const storedUser = localStorage.getItem('user');
+  if (!storedUser) {
+    throw new Error("Logged in user not found!");
+  }
+
+  const loggedInUser: User = JSON.parse(storedUser);
 
   const updateUser = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setUsername(event.target.value);
@@ -14,6 +21,17 @@ const AddUserModal = ({ chatRoomSocket, modalRef }: AddUserModalProps) => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    for (const chatRoom of chatRooms) {
+      const users = chatRoom.users;
+      const [ res ] = users.filter((user) => user.id !== loggedInUser.id);
+      if (res.username === username) {
+        modalRef.current?.close();
+        navigate(`/message/${chatRoom.id}`);
+        return;
+      }
+    }
+
     const createChatRoomUrl = "http://localhost:8000/chatroom/create/";
     try {
       const csrfCookie = getCookie("csrftoken");
@@ -22,14 +40,8 @@ const AddUserModal = ({ chatRoomSocket, modalRef }: AddUserModalProps) => {
         throw new Error("The CSRF token could not be fetched from the browser!");
       }
 
-      const storedUser = localStorage.getItem('user');
-      if (!storedUser) {
-        throw new Error("Logged in user not found!");
-      }
-
-      const user: User = JSON.parse(storedUser);
       const body: CreateChatRoomRequest = {
-        users: [user.username, username]
+        users: [loggedInUser.username, username]
       }
 
       const response = await fetch(createChatRoomUrl, {

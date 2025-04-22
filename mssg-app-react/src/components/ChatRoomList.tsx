@@ -148,7 +148,7 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
           <NewMessageIcon className="w-7 h-7 cursor-pointer hover:scale-[1.1]"></NewMessageIcon>
         </button>
       </div>
-      <AddUserModal chatRoomSocket={chatroomSocket} modalRef={modalRef} />
+      <AddUserModal chatRoomSocket={chatroomSocket} modalRef={modalRef} chatRooms={chatRooms} />
       <div className="overflow-scroll p-1 h-[82vh]">
         {chatRooms.map((chatRoom, index) => (
           <ChatRoom
