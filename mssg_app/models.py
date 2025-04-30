@@ -15,7 +15,7 @@ class ChatRooms(models.Model):
 
 class Messages(models.Model):
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    chatroom = models.ForeignKey(ChatRooms, on_delete=models.CASCADE)
+    chatroom = models.ForeignKey(ChatRooms, related_name="messages", on_delete=models.CASCADE)
     content = models.TextField(max_length=2000)
     sent_at = models.DateTimeField(default=timezone.now)
     

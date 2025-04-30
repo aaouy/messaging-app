@@ -30,7 +30,10 @@ def create_user(request):
 
 @require_POST
 def login_user(request):
-    data = json.loads(request.body)
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': "Invalid JSON body."})
     user = authenticate(request, username=data["username"], password=data["password"])
     if user:
         login(request, user)
@@ -85,7 +88,7 @@ def get_chatroom(request, page):
         chatrooms = ChatRooms.objects.filter(users=request.user).annotate(latest_mssg_time=Max('messages__sent_at')).order_by(F('latest_mssg_time').desc(nulls_last=True), '-created_at')
         if not chatrooms:
             return JsonResponse({'chat_rooms': [], 'has_next': False, 'total_pages': 0, 'current_page': 0}, status=200)
-        
+
         chatroom_list = []
         for chatroom in chatrooms:
             chatroom_list.append(serialize_chatroom(chatroom))
@@ -116,7 +119,8 @@ def get_chatroom_messages(request, chatroom_id, page):
     except Exception:
         return HttpResponseNotFound('chatroom not found')
     
-    messages = chatroom.messages_set.all().order_by('-sent_at') # newest messages at the front
+    # Latest messages at the front.
+    messages = chatroom.messages.all().order_by('-sent_at') 
     paginator = Paginator(messages, 50)
     try:
         messages_page = paginator.page(page)
@@ -125,6 +129,7 @@ def get_chatroom_messages(request, chatroom_id, page):
     except EmptyPage:
         messages_page = [] 
 
+    # Latest messages at the front.
     chatroom_messages = []
     for message in messages_page:
         message_obj = {'chatroom': serialize_chatroom(chatroom), 'content': message.content, 'sender': serialize_user(message.sender), 'sent_at': message.sent_at}
