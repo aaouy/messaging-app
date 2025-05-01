@@ -81,13 +81,13 @@ const AddUserModal = ({ chatRoomSocket, modalRef, chatRooms }: AddUserModalProps
 
   return (
     <dialog className="border-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" ref={modalRef} onClick={closeModal}>
-      <div className="w-[30vw] h-[30vh] flex flex-col p-3 bg-[#282b30]">
-          <h2 className="grow text-lg text-white text-center">New Message</h2>
+      <div className="w-[30vw] h-[30vh] flex flex-col p-3">
+          <h2 className="grow text-[25px] text-black text-center">New Message</h2>
         <div className='flex grow-2'>
           <form className="w-full flex flex-col justify-evenly items-center text-white" onSubmit={handleSubmit}>
-            <input className="text-white bg-[#424549] p-1 outline-none rounded-lg" onChange={updateUser} type="text" value={username} placeholder='Add a user...'/>
+            <input className="text-black border text-[14px] border-0.5 p-1 outline-none rounded-lg" onChange={updateUser} type="text" value={username} placeholder='Add a user...'/>
             <div className='text-[red] text-sm h-5'>{!userExists && <p>User was not found</p>}</div>
-            <input className="w-20 bg-[#7289da] text-sm hover:cursor-pointer hover:bg-[#5b6dae] rounded-lg" type="submit" />
+            <input className="w-20 h-8 bg-black text-sm hover:cursor-pointer rounded-sm" type="submit" />
           </form>
         </div>
       </div>

@@ -65,12 +65,12 @@ const Register = () => {
   };
   return (
     <div className="flex w-[100vw] h-[100vh] items-center justify-center">
-      <form className="flex items-center flex-col w-[30vw] p-[3%] border border-white" onSubmit={handleSubmit}>
-        <label className="text-white mt-[5px] mb-[5px]" htmlFor="login-username">Username</label>
-        <input className="text-white mt-[10px] w-2/3 bg-[#424549] rounded-lg mb-[10px] p-1 outline-none" type="text" id="login-username" value={username} onChange={updateUsername} />
-        <label className="text-white mt-[5px] mb-[5px]" htmlFor="login-password">Password</label>
-        <input className="text-white mt-[10px] w-2/3 mb-[10px] bg-[#424549] rounded-lg p-1 outline-none" type="password" id="login-password" value={password} onChange={updatePassword} />
-        <input className="text-white mt-[20px] mb-[10px] bg-[#7289da] w-1/2 cursor-pointer" type="submit" />
+      <form className="flex items-center flex-col w-[30vw] p-[3%] border border-black" onSubmit={handleSubmit}>
+        <label className="text-black mt-[5px] mb-[5px]" htmlFor="login-username">Username</label>
+        <input className="text-black mt-[10px] w-2/3 border border-0.5 rounded-lg mb-[10px] p-1 outline-none" type="text" id="login-username" value={username} onChange={updateUsername} />
+        <label className="text-black mt-[5px] mb-[5px]" htmlFor="login-password">Password</label>
+        <input className="text-black mt-[10px] w-2/3 border border-0.5 mb-[10px] rounded-lg p-1 outline-none" type="password" id="login-password" value={password} onChange={updatePassword} />
+        <input className="text-white mt-[20px] mb-[10px] bg-black w-1/2 cursor-pointer" type="submit" />
       </form>
     </div>
   );

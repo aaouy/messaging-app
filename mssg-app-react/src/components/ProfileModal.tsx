@@ -133,11 +133,11 @@ const ProfileModal = ({ modalRef }: ProfileModalProps) => {
 
   return (
     <dialog className="w-[50vw] h-[80vh] border-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" ref={modalRef} onClick={closeModal}>
-      <div className="flex flex-col pl-[2%] p-[2%] bg-[#424549] w-full h-full">
+      <div className="flex flex-col pl-[2%] p-[2%] w-full h-full">
         <div className="flex w-1/3 h-[10%] justify-evenly items-center">
-          <h3 className='text-white w-1/2'>Edit Image</h3>
+          <h3 className='text-black w-1/2'>Edit Image</h3>
           <form className="flex items-center justify-between ">
-            <label className="p-1 pl-3 pr-3 rounded-sm bg-[#7289da] cursor-pointer text-white inline-block" htmlFor="pfp-img-input">
+            <label className="p-1 pl-3 pr-3 rounded-sm bg-black cursor-pointer text-white inline-block" htmlFor="pfp-img-input">
               Upload
             </label>
             <input
@@ -150,7 +150,7 @@ const ProfileModal = ({ modalRef }: ProfileModalProps) => {
             />
           </form>
         </div>
-        <div className="bg-[#36393e] w-full h-full relative">
+        <div className="bg-[#f5f5f5] w-full h-full relative">
             {imgSrc && (
               <Cropper
                 image={imgSrc}
@@ -180,10 +180,10 @@ const ProfileModal = ({ modalRef }: ProfileModalProps) => {
         </div>
         <div className="flex items-center w-full justify-end">
           <div className="flex w-1/4 items-center justify-between">
-            <button className="cursor-pointer text-white" onClick={handleCloseButton}>
+            <button className="cursor-pointer text-black" onClick={handleCloseButton}>
               Cancel
             </button>
-            <button onClick={handleApply} className="bg-[#7289da] p-2 pl-4 pr-4 text-white cursor-pointer">
+            <button onClick={handleApply} className="bg-black p-2 pl-4 pr-4 text-white cursor-pointer">
               Apply
             </button>
           </div>

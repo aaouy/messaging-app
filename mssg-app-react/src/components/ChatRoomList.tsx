@@ -145,11 +145,11 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
   };
 
   return (
-    <div className="w-[20vw] bg-[#282b30]">
+    <div className="w-[20vw]">
       <div className="flex p-3 h-[8vh] justify-between">
-        <h1 className="text-[#dcdcdc] text-[24px]">Messages</h1>
+        <h1 className="text-black text-[24px]">Messages</h1>
         <button onClick={handleAddFriend}>
-          <NewMessageIcon className="w-7 h-7 cursor-pointer hover:scale-[1.1]"></NewMessageIcon>
+          <NewMessageIcon className="fill-black w-7 h-7 cursor-pointer hover:scale-[1.1]"></NewMessageIcon>
         </button>
       </div>
       <AddUserModal chatRoomSocket={chatroomSocket} modalRef={modalRef} chatRooms={chatRooms} />

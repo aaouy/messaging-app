@@ -39,11 +39,11 @@ const Message = ({ content, sender, sentAt }: MessageProps) => {
         <div className="min-w-[40px] mt-5">
           {sender && <img className="min-w-[40px] h-[40px] rounded-[50%]" src={sender.profilePicture} alt="profile-pic" />}
         </div>
-        <div className="text-[#dcdcdc] ml-4">
+        <div className="text-black ml-4">
           {sender && (
             <div className="flex items-center mt-5">
               <p>{sender.username}</p>
-              <p className="text-[10px] ml-[7px] mr-[7px] text-[#a9a9a9]">{handleDate(sentAt)}</p>
+              <p className="text-[10px] ml-[7px] mr-[7px] text-black">{handleDate(sentAt)}</p>
             </div>
           )}
           <p className="text-[15px] break-all">{linkedContent.map((val, key) => val.type === 'text' ? val.content : <a href={val.href} key={key} target='_blank' className='text-[#8AB4F8] hover:underline'>{val.content}</a>)}</p>

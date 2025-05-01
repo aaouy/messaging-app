@@ -28,7 +28,7 @@ const ProfileBar = () => {
   return (
     <div className="flex items-center w-full h-[10vh] bg-inherit p-2 pt-0">
       <ProfileModal modalRef={profileModalRef} />
-      <div className="flex bg-[#424549] h-full w-full rounded-lg items-center p-3">
+      <div className="flex h-full w-full bg-[#eeeeee] rounded-lg items-center p-3">
         <div className='flex items-center h-full w-1/2 start'>
           <img
             className="w-[45px] h-[45px] rounded-[50%] mr-3 cursor-pointer hover:scale-[1.1]"
@@ -36,11 +36,11 @@ const ProfileBar = () => {
             src={user.profilePicture}
             alt="profile picture"
           />
-          <p className='text-white'>{user.username}</p>
+          <p className='text-black'>{user.username}</p>
         </div>
         <div className='flex w-1/2 justify-end'>
           <button className="w-[30px] h-[30px] rounded-[50%] cursor-pointer hover:scale-[1.1]" onClick={handleSettingsClick}>
-            <SettingsIcon className='w-[30px] h-[30px]'></SettingsIcon>
+            <SettingsIcon className='fill-black w-[30px] h-[30px]'></SettingsIcon>
           </button>
         </div>
       </div>

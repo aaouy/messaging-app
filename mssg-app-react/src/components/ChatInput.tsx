@@ -62,7 +62,7 @@ const ChatInput = ({ notificationSocket, messageSocket, chatRooms}: ChatInputPro
     <div className="h-[10vh] box-border flex flex-col p-3 justify-center bg-inherit">
       <form className="h-full" onSubmit={handleMessageSubmit}>
         <input
-          className="w-full h-full p-5 bg-[#424549] outline-none text-[#dcdcdc] rounded-lg"
+          className="w-full h-full border border-[#e0e0e0] border-1 p-5 outline-none text-[black] rounded-lg"
           value={message}
           onChange={updateInput}
           type="text"

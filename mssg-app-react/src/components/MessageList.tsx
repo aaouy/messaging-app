@@ -61,7 +61,8 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
 
       const data: GetMessagesResponse = await response.json();
       const transformedData = convertSnakeToCamel(data);
-      const loadedMessages = transformedData.messages // newest mssgs at the front.
+      // Newest messages at the front.
+      const loadedMessages = transformedData.messages 
 
       if (loadedMessages.length === 0) return;
 
@@ -81,9 +82,9 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
 
         setMessages((messages) => [...messages, newMessage]);
       }
-      hasNextPageRef.current = data.has_next;
-      setPage(data.current_page);
-
+      hasNextPageRef.current = transformedData.hasNext;
+      setPage(transformedData.currentPage);
+      
     } catch (error: any) {
       console.error(error);
 
