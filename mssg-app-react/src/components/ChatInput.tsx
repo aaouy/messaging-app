@@ -11,6 +11,19 @@ const ChatInput = ({ notificationSocket, messageSocket, chatRooms}: ChatInputPro
     setMessage(event.target.value);
   };
 
+  const handleImagePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+    if (!event.clipboardData)
+      return;
+
+    for (const item of event.clipboardData?.items) {
+      if (item.type.indexOf('image') !== -1) {
+        const file = item.getAsFile();
+        console.log(file?.name);
+      }
+      
+    }
+  }
+
   const handleMessageSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const postMessageUrl = 'http://localhost:8000/message/save/';
@@ -62,11 +75,12 @@ const ChatInput = ({ notificationSocket, messageSocket, chatRooms}: ChatInputPro
     <div className="h-[10vh] box-border flex flex-col p-3 justify-center bg-inherit">
       <form className="h-full" onSubmit={handleMessageSubmit}>
         <input
-          className="w-full h-full border border-[#e0e0e0] border-1 p-5 outline-none text-[black] rounded-lg"
+          className="w-full h-full border-[#e0e0e0] border-1 p-5 outline-none text-[black] rounded-lg"
           value={message}
           onChange={updateInput}
           type="text"
           placeholder="Message..."
+          onPaste={handleImagePaste}
         />
       </form>
     </div>
