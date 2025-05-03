@@ -46,7 +46,7 @@ const Message = ({ content, sender, sentAt }: MessageProps) => {
               <p className="text-[10px] ml-[7px] mr-[7px] text-black">{handleDate(sentAt)}</p>
             </div>
           )}
-          <p className="text-[15px] break-all">{linkedContent.map((val, key) => val.type === 'text' ? val.content : <a href={val.href} key={key} target='_blank' className='text-[#8AB4F8] hover:underline'>{val.content}</a>)}</p>
+          <p className="text-[15px] font-[300] break-all">{linkedContent.map((val, key) => val.type === 'text' ? val.content : <a href={val.href} key={key} target='_blank' className='text-[#8AB4F8] hover:underline'>{val.content}</a>)}</p>
         </div>
       </div>
     );

@@ -25,7 +25,7 @@ const ChatWindow = ({ notificationSocket, chatRooms}: ChatWindowProps) => {
 
   if (!selectedChatRoom) return <div className="w-[80vw] h-[90vh]"></div>;
   return (
-    <div className="w-[80vw] h-[90vh]">
+    <div className="flex flex-col w-[80vw] h-[100vh]">
       <MessageList messageSocket={messageSocket} />
       <ChatInput
         notificationSocket={notificationSocket}
