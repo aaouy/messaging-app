@@ -86,7 +86,7 @@ const ChatInput = ({ notificationSocket, messageSocket, chatRooms }: ChatInputPr
   return (
     <>
       <div className="box-border flex flex-col p-3 justify-center bg-inherit">
-        <div className='flex flex-col border-[#e0e0e0] border-1 rounded-lg'>
+        <div className=' border-[#e0e0e0] border-1 rounded-lg'>
           {images.length !== 0 && (
             <div className="flex w-full min-h-[30vh] p-5 bg-white">
               {images.map((image, index) => (
@@ -110,9 +110,9 @@ const ChatInput = ({ notificationSocket, messageSocket, chatRooms }: ChatInputPr
               ))}
             </div>
           )}
-          <form className="h-full" onSubmit={handleMessageSubmit}>
+          <form  onSubmit={handleMessageSubmit}>
             <input
-              className="w-full h-full p-5 outline-none text-[black]"
+              className="w-full p-5 outline-none text-[black]"
               value={message}
               onChange={updateInput}
               type="text"

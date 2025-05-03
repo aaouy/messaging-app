@@ -111,7 +111,7 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
   );
 
   return (
-    <div className="flex flex-col-reverse overflow-scroll h-full pr-[100px] pb-5 pt-5">
+    <div className="flex flex-col-reverse overflow-scroll pr-[100px] pb-5 pt-5">
       {isLoading && <p>Loading...</p>}
       {messages.map((message, index) => (
         <div
