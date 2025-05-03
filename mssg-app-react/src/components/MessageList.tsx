@@ -118,7 +118,7 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
           ref={index === messages.length - 1 ? handlePagination : null}
           key={index}
           >
-          <Message sentAt={message.sentAt} sender={message.sender} content={message.content}>
+          <Message sentAt={message.sentAt} sender={message.sender} content={message.content} type="">
           </Message>
         </div>
       ))}

@@ -1,7 +1,7 @@
 import { MessageProps } from '../types';
 import { linkify } from './utils';
 
-const Message = ({ content, sender, sentAt }: MessageProps) => {
+const Message = ({ content, sender, sentAt, type }: MessageProps) => {
   const linkedContent = linkify(content);
 
   const handleDate = (sentAt: string | undefined) => {

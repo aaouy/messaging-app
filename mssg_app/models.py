@@ -21,6 +21,10 @@ class Messages(models.Model):
     
     def __str__(self):
         return self.content
+
+class MessageImages(models.Model):
+    message = models.ForeignKey(Messages, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(null=True, blank=True, upload_to="images/")
     
 class ChatRoomMembership(models.Model):
     users = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False, on_delete=models.CASCADE)
