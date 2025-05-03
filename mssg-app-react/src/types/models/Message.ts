@@ -6,6 +6,7 @@ export interface MessageInterface {
   content: string;
   sentAt: string | undefined;
   chatRoom: ChatRoomInterface;
+  images: string[];
 }
 
 export interface MessageContentInterface {

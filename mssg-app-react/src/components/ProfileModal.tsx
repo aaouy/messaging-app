@@ -111,7 +111,6 @@ const ProfileModal = ({ modalRef }: ProfileModalProps) => {
         method: "POST",
         credentials: 'include',
         headers: {
-          "Content-Type": "application/json",
           "X-CSRFToken": csrfCookie
         },
         body: formData
@@ -122,7 +121,7 @@ const ProfileModal = ({ modalRef }: ProfileModalProps) => {
 
       const data = await response.json();
       user.profilePicture = data.profile_pic;
-      localStorage.setItem('user', user);
+      localStorage.setItem('user', JSON.stringify(user));
 
     } catch (error: any) {
       console.error(error);

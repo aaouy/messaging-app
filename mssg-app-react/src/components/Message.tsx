@@ -1,9 +1,8 @@
 import { MessageProps } from '../types';
 import { linkify } from './utils';
 
-const Message = ({ content, sender, sentAt, type }: MessageProps) => {
+const Message = ({ content, sender, sentAt, images }: MessageProps) => {
   const linkedContent = linkify(content);
-
   const handleDate = (sentAt: string | undefined) => {
     const today = new Date();
     let sentAtLocal = undefined;
@@ -14,14 +13,12 @@ const Message = ({ content, sender, sentAt, type }: MessageProps) => {
         sentAtLocal = new Intl.DateTimeFormat('en-GB', {
           timeStyle: 'short',
         }).format(dateObj);
-
       } else if (dateObj.getDate() === today.getDate() - 1) {
         sentAtLocal =
           'Yesterday, ' +
           new Intl.DateTimeFormat('en-GB', {
             timeStyle: 'short',
           }).format(dateObj);
-        
       } else {
         sentAtLocal = new Intl.DateTimeFormat('en-GB', {
           day: '2-digit',
@@ -34,22 +31,50 @@ const Message = ({ content, sender, sentAt, type }: MessageProps) => {
     }
     return sentAtLocal;
   };
-    return (
-      <div className="flex ml-4">
-        <div className="min-w-[40px] mt-5">
-          {sender && <img className="min-w-[40px] h-[40px] rounded-[50%]" src={sender.profilePicture} alt="profile-pic" />}
-        </div>
-        <div className="text-black ml-4">
-          {sender && (
-            <div className="flex items-center mt-5">
-              <p>{sender.username}</p>
-              <p className="text-[10px] ml-[7px] mr-[7px] text-black">{handleDate(sentAt)}</p>
-            </div>
+  return (
+    <div className="flex ml-4">
+      <div className="min-w-[40px] mt-5">
+        {sender && (
+          <img
+            className="min-w-[40px] h-[40px] rounded-[50%]"
+            src={sender.profilePicture}
+            alt="profile-pic"
+          />
+        )}
+      </div>
+      <div className="text-black ml-4">
+        {sender && (
+          <div className="flex items-center mt-5">
+            <p>{sender.username}</p>
+            <p className="text-[10px] ml-[7px] mr-[7px] text-black">{handleDate(sentAt)}</p>
+          </div>
+        )}
+        <p className="text-[15px] font-[300] break-all">
+          {linkedContent.map((val, key) =>
+            val.type === 'text' ? (
+              val.content
+            ) : (
+              <a
+                href={val.href}
+                key={key}
+                target="_blank"
+                className="text-[#8AB4F8] hover:underline"
+              >
+                {val.content}
+              </a>
+            )
           )}
-          <p className="text-[15px] font-[300] break-all">{linkedContent.map((val, key) => val.type === 'text' ? val.content : <a href={val.href} key={key} target='_blank' className='text-[#8AB4F8] hover:underline'>{val.content}</a>)}</p>
+        </p>
+        <div>
+          {images.map((image, index) => (
+            <div key={index}>
+              <img src={image} alt="" />
+            </div>
+          ))}
         </div>
       </div>
-    );
+    </div>
+  );
 };
 
 export default Message;

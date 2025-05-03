@@ -1,5 +1,5 @@
 import json, uuid
-from .models import ChatRooms, Messages, Profile
+from .models import ChatRooms, Messages, Profile, MessageImages
 from .utils import serialize_user, serialize_chatroom
 from django.views.decorators.http import require_POST, require_GET
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -72,14 +72,20 @@ def create_chatroom(request):
 @require_POST
 def save_message(request):
     try:
-        data = json.loads(request.body)
-        chatroom = ChatRooms.objects.get(chatroom_id=data['chat_room_id'])
-        message = Messages.objects.create(sender=request.user, chatroom=chatroom, content=data['content'])
+        data = request.POST
+        chatroom = ChatRooms.objects.get(chatroom_id=data.get('chat_room_id'))
+        message = Messages.objects.create(sender=request.user, chatroom=chatroom, content=data.get('content'))
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON body.'}, status=400)
     except Exception:
         return JsonResponse({'error': 'An unexpected error has occurred.'}, status=500)
-    return JsonResponse({'sender': serialize_user(request.user),'content': data['content'], 'chat_room': serialize_chatroom(chatroom), 'sent_at': message.sent_at})
+    
+    images = request.FILES.getlist('images[]')
+    for image in images:
+        print(image)
+        MessageImages.objects.create(message=message, image=image)
+    print([HOST_PREFIX + img.image.url for img in message.images.all()])
+    return JsonResponse({'sender': serialize_user(request.user),'content': data.get('content'), 'chat_room': serialize_chatroom(chatroom), 'sent_at': message.sent_at, 'images': [HOST_PREFIX + img.image.url for img in message.images.all()]})
     
 @login_required
 @require_GET
@@ -132,7 +138,8 @@ def get_chatroom_messages(request, chatroom_id, page):
     # Latest messages at the front.
     chatroom_messages = []
     for message in messages_page:
-        message_obj = {'chatroom': serialize_chatroom(chatroom), 'content': message.content, 'sender': serialize_user(message.sender), 'sent_at': message.sent_at}
+        print([HOST_PREFIX + img.image.url for img in message.images.all()])
+        message_obj = {'chatroom': serialize_chatroom(chatroom), 'content': message.content, 'sender': serialize_user(message.sender), 'sent_at': message.sent_at, 'images': [str(f'{HOST_PREFIX}{img.image.url}') for img in message.images.all()]}
         chatroom_messages.append(message_obj)
         
     response = {
@@ -142,16 +149,17 @@ def get_chatroom_messages(request, chatroom_id, page):
         'current_page': int(page)
     }
     
-    return JsonResponse(response, status=201)
+    for mssg in chatroom_messages:
+        print(mssg['images'])
+    
+    return JsonResponse(response, status=200)
 
 @login_required
 @require_POST
 def upload_profile_pic(request):
     image_file = request.FILES.get('cropped_image')
     if image_file:
-        ext = image_file.name.split('.')[-1]
-        unique_filename = f"{uuid.uuid4().hex}.{ext}"
-        request.user.profile_picture.save(unique_filename, image_file)
+        request.user.profile_picture.save(image_file.name, image_file)
         return JsonResponse({'profile_pic': HOST_PREFIX + request.user.profile_picture.url}, status=200)
     return HttpResponse('image not saved')
 

@@ -20,13 +20,15 @@ class ChatConsumer(WebsocketConsumer):
         content = data_dict['content']
         sender = self.scope['user']
         chatroom = data_dict['chat_room']
+        images = data_dict['images']
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
                 'type': 'chat_message',
                 'sender': serialize_user(sender),
                 'content': content,
-                'chat_room': chatroom
+                'chat_room': chatroom,
+                'images': images,
             }
         )
             
@@ -34,12 +36,14 @@ class ChatConsumer(WebsocketConsumer):
         content = event['content']
         sender = event['sender']
         chatroom = event['chat_room']
+        images = event['images']
         
         response = {
             'content': content,
             'sent_at': str(datetime.datetime.now(datetime.timezone.utc)),
             'sender': sender,
-            'chat_room': chatroom
+            'chat_room': chatroom,
+            'images': images,
         }
         self.send(text_data=json.dumps(response))
         

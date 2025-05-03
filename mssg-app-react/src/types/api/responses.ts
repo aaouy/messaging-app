@@ -21,6 +21,7 @@ export interface MessageResponse {
     content: string;
     chat_room: ChatRoomResponse;
     sent_at: string;
+    images: string[];
 }
 
 export interface WebSocketMessageResponse {
@@ -28,6 +29,7 @@ export interface WebSocketMessageResponse {
     sent_at: string;
     sender: UserResponse;
     chat_room: ChatRoomResponse;
+    images: string[];
 }
 
 export interface GetChatRoomResponse {

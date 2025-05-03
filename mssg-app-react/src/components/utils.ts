@@ -44,6 +44,9 @@ const toCamelCase = (str: string): string => {
 
 export const convertSnakeToCamel = (obj: Record<string, any>): Record<string, any> => {
   const newObj: Record<string, any> = {};
+  if (typeof obj !== 'object')
+    return obj;
+  
   for (const key in obj) {
     if (Array.isArray(obj[key])) {
       const arr = []

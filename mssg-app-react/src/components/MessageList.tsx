@@ -31,9 +31,10 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
 
       const newMessage: MessageInterface = {
         sender: undefined,
-        content: data.content,
-        sentAt: data.sent_at,
-        chatRoom: transformedData.chatRoom
+        content: transformedData.content,
+        sentAt: transformedData.sentAt,
+        chatRoom: transformedData.chatRoom,
+        images: transformedData.images,
       }
 
       if (!lastMessageRef.current || (lastMessageRef.current && lastMessageRef.current.sender && (transformedData.sender.id !== lastMessageRef.current.sender.id)) || (lastMessageRef.current && newMessage.sentAt && lastMessageRef.current.sentAt && (new Date(newMessage.sentAt).getTime() - new Date(lastMessageRef.current.sentAt).getTime() >= 60 * 1000))) {
@@ -60,23 +61,27 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
         throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
 
       const data: GetMessagesResponse = await response.json();
+      console.log(data.messages[0].images[0]);
       const transformedData = convertSnakeToCamel(data);
       // Newest messages at the front.
       const loadedMessages = transformedData.messages 
 
+      console.log(transformedData.messages[0].images[0])
+
       if (loadedMessages.length === 0) return;
 
       const latestMessage = loadedMessages[0];
-      lastMessageRef.current = {sender: latestMessage.user, content: latestMessage.content, sentAt: latestMessage.sentAt, chatRoom: latestMessage.chatRoom};
+      lastMessageRef.current = {sender: latestMessage.user, content: latestMessage.content, sentAt: latestMessage.sentAt, chatRoom: latestMessage.chatRoom, images: latestMessage.images};
 
       for (let i = 0; i < loadedMessages.length; i++) {
-        let newMessage: MessageInterface = {sender: undefined, content: loadedMessages[i].content, sentAt: undefined, chatRoom: loadedMessages[i].chatRoom};
+        let newMessage: MessageInterface = {sender: undefined, content: loadedMessages[i].content, sentAt: undefined, chatRoom: loadedMessages[i].chatRoom, images: loadedMessages[i].images};
         if (i === loadedMessages.length - 1 || (loadedMessages[i].sender.id != loadedMessages[i + 1].sender.id || (new Date(loadedMessages[i].sentAt).getTime() - new Date(loadedMessages[i + 1].sentAt).getTime()) >= 60 * 1000)) {
           newMessage = {
             sender: loadedMessages[i].sender,
             sentAt: loadedMessages[i].sentAt,
             content: loadedMessages[i].content,
-            chatRoom: loadedMessages[i].chatRoom
+            chatRoom: loadedMessages[i].chatRoom,
+            images: loadedMessages[i].images,
           }
         }
 
@@ -118,7 +123,7 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
           ref={index === messages.length - 1 ? handlePagination : null}
           key={index}
           >
-          <Message sentAt={message.sentAt} sender={message.sender} content={message.content} type="">
+          <Message sentAt={message.sentAt} sender={message.sender} content={message.content} images={message.images}>
           </Message>
         </div>
       ))}

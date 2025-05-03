@@ -4,7 +4,7 @@ export interface MessageProps {
   sender: User | undefined;
   content: string;
   sentAt?: string;
-  type: string;
+  images: string[];
 }
 
 export interface MessageListProps {
