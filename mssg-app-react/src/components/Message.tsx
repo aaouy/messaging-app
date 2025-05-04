@@ -3,6 +3,45 @@ import { linkify } from './utils';
 
 const Message = ({ content, sender, sentAt, images }: MessageProps) => {
   const linkedContent = linkify(content);
+
+  const handleGridFormat = () => {
+    switch (images.length) {
+      case 1: 
+        return "grid-cols-1";
+      case 2:
+        return "grid-cols-2 grid-rows-1";
+      case 3:
+        return "grid-cols-3 grid-rows-2";
+      case 4:
+        return "grid-cols-2 grid-rows-2";
+      case 5:
+        return "grid-cols-6 grid-rows-2";
+      default:
+        return "grid-cols-3 grid-rows-3"
+    }
+  }
+  
+  const handleImageSizes = (index: number) => {
+    const n = images.length
+    if (n === 1)
+      return "col-span-1";
+    if (n === 2) 
+      return "col-span-1";
+    if (n === 3) {
+      if (index === 0) 
+        return "col-span-2 row-span-2";
+      return "col-span-1 row-span-1";
+    }
+    if (n === 4)
+      return "row-span-1 col-span-1";
+    if (n === 5) {
+      if (index === 0 || index === 1) 
+        return "col-span-3";
+      return "col-span-2"
+    }
+
+    }
+
   const handleDate = (sentAt: string | undefined) => {
     const today = new Date();
     let sentAtLocal = undefined;
@@ -49,7 +88,7 @@ const Message = ({ content, sender, sentAt, images }: MessageProps) => {
             <p className="text-[10px] ml-[7px] mr-[7px] text-black">{handleDate(sentAt)}</p>
           </div>
         )}
-        <p className="text-[15px] font-[300] break-all">
+        <p className="text-[15px] font-[350] break-all">
           {linkedContent.map((val, key) =>
             val.type === 'text' ? (
               val.content
@@ -65,13 +104,15 @@ const Message = ({ content, sender, sentAt, images }: MessageProps) => {
             )
           )}
         </p>
-        <div>
+        {images.length > 0 && (
+        <div className={`h-fit max-w-3/5 grid ${handleGridFormat()}`}>
           {images.map((image, index) => (
-            <div key={index}>
-              <img src={image} alt="" />
+            <div className={`pr-0.5 pb-0.5 flex items-center ${handleImageSizes(index)}`} key={index}>
+              <img className={`${images.length > 1 ? "object-cover w-full h-full": "max-w-full object-contain"} rounded-lg`} src={image} alt="" />
             </div>
           ))}
         </div>
+        )}
       </div>
     </div>
   );

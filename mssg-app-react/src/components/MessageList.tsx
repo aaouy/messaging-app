@@ -28,6 +28,7 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
     messageSocket.onmessage = (event) => {
       const data: WebSocketMessageResponse = JSON.parse(event.data);
       const transformedData = convertSnakeToCamel(data);
+      console.log(transformedData);
 
       const newMessage: MessageInterface = {
         sender: undefined,
@@ -116,10 +117,9 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
   );
 
   return (
-    <div className="flex flex-col-reverse overflow-scroll pr-[100px] pb-5 pt-5">
-      {isLoading && <p>Loading...</p>}
+    <div className="flex flex-col-reverse h-full overflow-scroll pr-[100px] pb-5 pt-5">
       {messages.map((message, index) => (
-        <div
+        <div className='flex'
           ref={index === messages.length - 1 ? handlePagination : null}
           key={index}
           >

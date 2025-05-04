@@ -26,9 +26,9 @@ const ProfileBar = () => {
   }
 
   return (
-    <div className="flex items-center w-full h-[10vh] bg-inherit p-2 pt-0">
+    <div className="flex items-center w-full h-[10vh] bg-inherit pt-0">
       <ProfileModal modalRef={profileModalRef} />
-      <div className="flex h-full w-full bg-[#eeeeee] rounded-lg items-center p-3">
+      <div className="flex h-full w-full bg-[#dcdcdc] rounded-lg items-center p-3">
         <div className='flex items-center h-full w-1/2 start'>
           <img
             className="w-[45px] h-[45px] rounded-[50%] mr-3 cursor-pointer hover:scale-[1.1]"

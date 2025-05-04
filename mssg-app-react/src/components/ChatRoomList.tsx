@@ -145,15 +145,15 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
   };
 
   return (
-    <div className="w-[20vw]">
-      <div className="flex p-3 h-[8vh] justify-between">
+    <div className="w-[20vw] h-[100vh]">
+      <div className="flex p-3 h-[9vh] justify-between">
         <h1 className="text-black text-[24px]">Messages</h1>
         <button onClick={handleAddFriend}>
           <NewMessageIcon className="fill-black w-7 h-7 cursor-pointer hover:scale-[1.1]"></NewMessageIcon>
         </button>
       </div>
       <AddUserModal chatRoomSocket={chatroomSocket} modalRef={modalRef} chatRooms={chatRooms} />
-      <div className="overflow-scroll p-1 h-[82vh]">
+      <div className="bg-[#f5f5f5] overflow-scroll h-[80vh] p-3">
         {chatRooms.map((chatRoom, index) => (
           <ChatRoom
             lastChatRoomref={index === chatRooms.length - 1 ? lastChatRoomRef : null}
@@ -165,7 +165,6 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
             key={index}
           />
         ))}
-        {isLoading && <p>Loading...</p>}
       </div>
       <ProfileBar/>
     </div>

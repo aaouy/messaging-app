@@ -27,9 +27,9 @@ const ChatInput = ({ notificationSocket, messageSocket, chatRooms }: ChatInputPr
       if (item.type.indexOf('image') !== -1) {
         const file = item.getAsFile();
         if (!file) return;
-        setImageFiles((files) => [file, ...files])
+        setImageFiles((files) => [...files, file])
         const fileUrl = URL.createObjectURL(file);
-        setImages((images) => [fileUrl, ...images]);
+        setImages((images) => [...images, fileUrl]);
       }
     }
   };
@@ -65,6 +65,8 @@ const ChatInput = ({ notificationSocket, messageSocket, chatRooms }: ChatInputPr
         throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
       }
 
+      setImages([]);
+
       for (const image of images) {
         URL.revokeObjectURL(image);
       }
@@ -73,7 +75,7 @@ const ChatInput = ({ notificationSocket, messageSocket, chatRooms }: ChatInputPr
       setMessage('');
       console.log('Message saved!');
 
-      if (notificationSocket && messageSocket && message.trim()) {
+      if (notificationSocket && messageSocket && (message.trim() || (!message.trim() && images.length > 0))) {
         messageSocket.send(JSON.stringify(data));
 
         const storedUser: string | null = localStorage.getItem('user');
