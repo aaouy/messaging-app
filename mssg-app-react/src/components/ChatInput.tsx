@@ -73,6 +73,7 @@ const ChatInput = ({ notificationSocket, messageSocket, chatRooms }: ChatInputPr
 
       const data: MessageResponse = await response.json();
       setMessage('');
+
       console.log('Message saved!');
 
       if (notificationSocket && messageSocket && (message.trim() || (!message.trim() && images.length > 0))) {

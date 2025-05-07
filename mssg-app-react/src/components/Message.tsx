@@ -1,8 +1,22 @@
-import { MessageProps } from '../types';
+import { MessageProps, User } from '../types';
 import { linkify } from './utils';
+import Bin from "../assets/bin.svg?react";
+import { useEffect, useState } from 'react';
 
-const Message = ({ content, sender, sentAt, images }: MessageProps) => {
+const Message = ({ includeProfile, deleteMessage, messageId, content, sender, sentAt, images }: MessageProps) => {
   const linkedContent = linkify(content);
+  const [loggedInUser, setLoggedInUser] = useState<User>();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      throw new Error("Logged in user not found!");
+    }
+  
+    const user: User = JSON.parse(storedUser);
+
+    setLoggedInUser(user);
+  })
 
   const handleGridFormat = () => {
     switch (images.length) {
@@ -20,7 +34,7 @@ const Message = ({ content, sender, sentAt, images }: MessageProps) => {
         return "grid-cols-3 grid-rows-3"
     }
   }
-  
+
   const handleImageSizes = (index: number) => {
     const n = images.length
     if (n === 1)
@@ -71,9 +85,10 @@ const Message = ({ content, sender, sentAt, images }: MessageProps) => {
     return sentAtLocal;
   };
   return (
-    <div className="flex ml-4">
+    <div className="group relative flex pl-4 pt-0.5 pb-0.5 hover:bg-[#f0f0f0] w-full">
+      <div className={`hidden  group-hover:${loggedInUser && loggedInUser.id === sender.id ? "block" : "hidden"} absolute -top-[10px] right-0 bg-transparent`}><Bin onClick={() => deleteMessage(messageId)} className='cursor-pointer hover:scale-[1.1] w-5 p-0 fill-red-600 hover:block'></Bin></div>
       <div className="min-w-[40px] mt-5">
-        {sender && (
+        {includeProfile && (
           <img
             className="min-w-[40px] h-[40px] rounded-[50%]"
             src={sender.profilePicture}
@@ -82,13 +97,13 @@ const Message = ({ content, sender, sentAt, images }: MessageProps) => {
         )}
       </div>
       <div className="text-black ml-4">
-        {sender && (
+        {includeProfile && (
           <div className="flex items-center mt-5">
             <p>{sender.username}</p>
             <p className="text-[10px] ml-[7px] mr-[7px] text-black">{handleDate(sentAt)}</p>
           </div>
         )}
-        <p className="text-[15px] font-[350] break-all">
+        <p className="text-[15px] tracking-wide font-[300] break-all">
           {linkedContent.map((val, key) =>
             val.type === 'text' ? (
               val.content
@@ -108,7 +123,7 @@ const Message = ({ content, sender, sentAt, images }: MessageProps) => {
         <div className={`h-fit max-w-3/5 grid ${handleGridFormat()}`}>
           {images.map((image, index) => (
             <div className={`pr-0.5 pb-0.5 flex items-center ${handleImageSizes(index)}`} key={index}>
-              <img className={`${images.length > 1 ? "object-cover w-full h-full": "max-w-full object-contain"} rounded-lg`} src={image} alt="" />
+              <img className={`${images.length > 1 ? "object-cover w-full h-full": "max-w-full object-contain"} rounded-lg hover:cursor-pointer`} src={image} alt="" />
             </div>
           ))}
         </div>

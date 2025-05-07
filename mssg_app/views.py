@@ -1,7 +1,7 @@
 import json, uuid
 from .models import ChatRooms, Messages, Profile, MessageImages
 from .utils import serialize_user, serialize_chatroom
-from django.views.decorators.http import require_POST, require_GET
+from django.views.decorators.http import require_POST, require_GET, require_http_methods
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
 from django.db import IntegrityError
@@ -9,6 +9,7 @@ from django.db.models import Max, F
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 HOST_PREFIX = 'http://localhost:8000'
 
@@ -82,10 +83,8 @@ def save_message(request):
     
     images = request.FILES.getlist('images[]')
     for image in images:
-        print(image)
         MessageImages.objects.create(message=message, image=image)
-    print([HOST_PREFIX + img.image.url for img in message.images.all()])
-    return JsonResponse({'sender': serialize_user(request.user),'content': data.get('content'), 'chat_room': serialize_chatroom(chatroom), 'sent_at': message.sent_at, 'images': [HOST_PREFIX + img.image.url for img in message.images.all()]})
+    return JsonResponse({"type": "message", 'id': message.pk, 'sender': serialize_user(request.user),'content': data.get('content'), 'chat_room': serialize_chatroom(chatroom), 'sent_at': message.sent_at, 'images': [HOST_PREFIX + img.image.url for img in message.images.all()]})
     
 @login_required
 @require_GET
@@ -138,8 +137,7 @@ def get_chatroom_messages(request, chatroom_id, page):
     # Latest messages at the front.
     chatroom_messages = []
     for message in messages_page:
-        print([HOST_PREFIX + img.image.url for img in message.images.all()])
-        message_obj = {'chatroom': serialize_chatroom(chatroom), 'content': message.content, 'sender': serialize_user(message.sender), 'sent_at': message.sent_at, 'images': [str(f'{HOST_PREFIX}{img.image.url}') for img in message.images.all()]}
+        message_obj = {'id': message.pk, 'chatroom': serialize_chatroom(chatroom), 'content': message.content, 'sender': serialize_user(message.sender), 'sent_at': message.sent_at, 'images': [str(f'{HOST_PREFIX}{img.image.url}') for img in message.images.all()]}
         chatroom_messages.append(message_obj)
         
     response = {
@@ -148,9 +146,6 @@ def get_chatroom_messages(request, chatroom_id, page):
         'total_pages': paginator.num_pages,
         'current_page': int(page)
     }
-    
-    for mssg in chatroom_messages:
-        print(mssg['images'])
     
     return JsonResponse(response, status=200)
 
@@ -162,6 +157,18 @@ def upload_profile_pic(request):
         request.user.profile_picture.save(image_file.name, image_file)
         return JsonResponse({'profile_pic': HOST_PREFIX + request.user.profile_picture.url}, status=200)
     return HttpResponse('image not saved')
+
+@login_required
+@require_http_methods(["DELETE"])
+def delete_message(request, message_id):
+    try:
+        messages = request.user.messages.all()
+        messages.filter(pk=message_id).delete()
+    except Messages.DoesNotExist:
+        return HttpResponse("Message does not exist.")
+    return JsonResponse({"message": "Message deleted"})
+        
+    
 
 
     

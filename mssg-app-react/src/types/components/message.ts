@@ -1,7 +1,10 @@
 import { User } from "../models/User";
 
 export interface MessageProps {
-  sender: User | undefined;
+  includeProfile: boolean;
+  deleteMessage: (messageId: number) => void;
+  messageId: number;
+  sender: User;
   content: string;
   sentAt?: string;
   images: string[];

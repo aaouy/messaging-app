@@ -1,8 +1,8 @@
 import Message from './Message';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { WebSocketMessageResponse, MessageInterface, MessageListProps, GetMessagesResponse } from '../types';
+import { WebSocketMessageResponse, MessageInterface, MessageListProps, GetMessagesResponse, User } from '../types';
 import { useParams } from 'react-router-dom';
-import { convertSnakeToCamel } from './utils';
+import { convertSnakeToCamel, getCookie } from './utils';
 
 const MessageList = ({ messageSocket }: MessageListProps) => {
   const [messages, setMessages] = useState<MessageInterface[]>([]);
@@ -11,44 +11,54 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
   const [page, setPage] = useState<number>(1);
   const observer = useRef<IntersectionObserver | null>(null);
   const { selectedChatRoom } = useParams();
-  const lastMessageRef = useRef<MessageInterface | null>(null);
 
   useEffect(() => {
     setMessages([]);
     getMessages(1);
-
-    return () => {
-      lastMessageRef.current = null;
-    }
+  
   }, [selectedChatRoom]);
 
   useEffect(() => {
     if (!messageSocket) return;
 
     messageSocket.onmessage = (event) => {
-      const data: WebSocketMessageResponse = JSON.parse(event.data);
+      const data: WebSocketMessageResponse  = JSON.parse(event.data);
+
+      if (data.type === 'delete') {
+
+        const deletedMessageIndex = messages.findIndex((message) => message.id === data.id);
+
+        if (deletedMessageIndex === -1)
+          return messages;
+
+        if (deletedMessageIndex - 1 >= 0 && messages[deletedMessageIndex].sender && !messages[deletedMessageIndex - 1].sender) {
+          const newMessage = messages[deletedMessageIndex - 1];
+          newMessage.sender = messages[deletedMessageIndex].sender;
+          setMessages([...messages.slice(0, deletedMessageIndex - 1), newMessage, ...messages.slice(deletedMessageIndex + 1, messages.length)]);
+          return;
+        } 
+
+        setMessages([...messages.slice(0, deletedMessageIndex), ...messages.slice(deletedMessageIndex + 1, messages.length)]);
+        return;
+      }
+
       const transformedData = convertSnakeToCamel(data);
-      console.log(transformedData);
 
       const newMessage: MessageInterface = {
-        sender: undefined,
+        id: data.id,
+        sender: transformedData.sender,
         content: transformedData.content,
         sentAt: transformedData.sentAt,
         chatRoom: transformedData.chatRoom,
         images: transformedData.images,
       }
 
-      if (!lastMessageRef.current || (lastMessageRef.current && lastMessageRef.current.sender && (transformedData.sender.id !== lastMessageRef.current.sender.id)) || (lastMessageRef.current && newMessage.sentAt && lastMessageRef.current.sentAt && (new Date(newMessage.sentAt).getTime() - new Date(lastMessageRef.current.sentAt).getTime() >= 60 * 1000))) {
-        newMessage.sender = transformedData.sender;
-      }
-
-      lastMessageRef.current = newMessage;
       setMessages((messages) => [newMessage, ...messages]);
     };
     return () => {
       messageSocket.onmessage = null;
     };
-  }, [messageSocket]);
+  }, [messageSocket, messages]);
 
   const getMessages = async (page: number) => {
     const getMessagesUrl = `http://localhost:8000/messages/${selectedChatRoom}/${page}/`;
@@ -62,32 +72,18 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
         throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
 
       const data: GetMessagesResponse = await response.json();
-      console.log(data.messages[0].images[0]);
       const transformedData = convertSnakeToCamel(data);
-      // Newest messages at the front.
-      const loadedMessages = transformedData.messages 
 
-      console.log(transformedData.messages[0].images[0])
+      // Newest messages at the front.
+      const loadedMessages = transformedData.messages;
 
       if (loadedMessages.length === 0) return;
 
-      const latestMessage = loadedMessages[0];
-      lastMessageRef.current = {sender: latestMessage.user, content: latestMessage.content, sentAt: latestMessage.sentAt, chatRoom: latestMessage.chatRoom, images: latestMessage.images};
-
       for (let i = 0; i < loadedMessages.length; i++) {
-        let newMessage: MessageInterface = {sender: undefined, content: loadedMessages[i].content, sentAt: undefined, chatRoom: loadedMessages[i].chatRoom, images: loadedMessages[i].images};
-        if (i === loadedMessages.length - 1 || (loadedMessages[i].sender.id != loadedMessages[i + 1].sender.id || (new Date(loadedMessages[i].sentAt).getTime() - new Date(loadedMessages[i + 1].sentAt).getTime()) >= 60 * 1000)) {
-          newMessage = {
-            sender: loadedMessages[i].sender,
-            sentAt: loadedMessages[i].sentAt,
-            content: loadedMessages[i].content,
-            chatRoom: loadedMessages[i].chatRoom,
-            images: loadedMessages[i].images,
-          }
-        }
-
+        const newMessage: MessageInterface = {id: loadedMessages[i].id, sender: loadedMessages[i].sender, content: loadedMessages[i].content, sentAt: loadedMessages[i].sentAt, chatRoom: loadedMessages[i].chatRoom, images: loadedMessages[i].images};
         setMessages((messages) => [...messages, newMessage]);
       }
+
       hasNextPageRef.current = transformedData.hasNext;
       setPage(transformedData.currentPage);
       
@@ -98,6 +94,40 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
       setIsLoading(false);
     }
   };
+
+  const includeProfileBar = (message: MessageInterface, index: number) => {
+    return index === messages.length - 1 || message.sender.id !== messages[index + 1].sender.id || (new Date(message.sentAt).getTime() - new Date(messages[index + 1].sentAt).getTime() >= 60 * 1000)
+  } 
+
+  const deleteMessage = async (messageId: number) => {
+    const deleteMessageUrl = `http://localhost:8000/message/delete/${messageId}/`;
+    const csrfCookie = getCookie("csrftoken");
+    if (!csrfCookie)
+      return;
+
+    try {
+      const response = await fetch(deleteMessageUrl, {
+        method: "DELETE",
+        credentials: 'include',
+        headers: {
+          'Content-Type': "application/json",
+          "X-CSRFToken": csrfCookie,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
+      }
+      const data = await response.json();
+      console.log(data);
+
+    } catch (error: any) {
+      console.log(error);
+    }
+
+    messageSocket?.send(JSON.stringify({'type': 'delete', 'id': messageId}))
+
+  }
 
   const handlePagination = useCallback(
     (node: HTMLDivElement) => {
@@ -123,7 +153,7 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
           ref={index === messages.length - 1 ? handlePagination : null}
           key={index}
           >
-          <Message sentAt={message.sentAt} sender={message.sender} content={message.content} images={message.images}>
+          <Message includeProfile={includeProfileBar(message, index)} deleteMessage={deleteMessage} messageId={message.id} sentAt={message.sentAt} sender={message.sender} content={message.content} images={message.images}>
           </Message>
         </div>
       ))}

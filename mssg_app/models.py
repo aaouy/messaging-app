@@ -14,7 +14,7 @@ class ChatRooms(models.Model):
     num_unread_mssgs = models.IntegerField(default=0)
 
 class Messages(models.Model):
-    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="messages")
     chatroom = models.ForeignKey(ChatRooms, related_name="messages", on_delete=models.CASCADE)
     content = models.TextField(max_length=2000)
     sent_at = models.DateTimeField(default=timezone.now)

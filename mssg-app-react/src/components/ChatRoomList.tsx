@@ -5,14 +5,13 @@ import ChatRoom from './ChatRoom.tsx';
 import ProfileBar from './ProfileBar.tsx';
 import NewMessageIcon from '../assets/new-message-icon.svg?react';
 import AddUserModal from './AddUserModal.tsx';
-import { convertSnakeToCamel } from './utils.ts';
+import { convertSnakeToCamel } from './utils.tsx';
 
 const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomListProps) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const currentPageRef = useRef<number>(1);
   const hasNextRef = useRef<boolean>(false);
   const observer = useRef<IntersectionObserver | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { selectedChatRoom } = useParams();
   const [chatroomSocket, setChatroomSocket] = useState<WebSocket | null>(null);
 
@@ -122,7 +121,6 @@ const ChatRoomList = ({ notificationSocket, setChatRooms, chatRooms }: ChatroomL
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasNextRef.current) {
-          setIsLoading(true);
           getChatrooms(currentPageRef.current + 1);
         }
       });

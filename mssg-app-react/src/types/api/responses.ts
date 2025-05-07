@@ -17,6 +17,8 @@ export interface ChatRoomResponse {
 }
 
 export interface MessageResponse {
+    type: "message" | "delete";
+    id: number;
     sender: UserResponse;
     content: string;
     chat_room: ChatRoomResponse;
@@ -25,6 +27,8 @@ export interface MessageResponse {
 }
 
 export interface WebSocketMessageResponse {
+    type: 'message' | 'delete';
+    id: number;
     content: string;
     sent_at: string;
     sender: UserResponse;

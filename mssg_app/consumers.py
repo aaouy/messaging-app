@@ -17,14 +17,28 @@ class ChatConsumer(WebsocketConsumer):
     
     def receive(self, text_data):
         data_dict = json.loads(text_data)
+        id = data_dict['id']
+        
+        if (data_dict['type'] == 'delete'):
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'delete_message',
+                    'id': id
+                }
+            )
+            return
+
         content = data_dict['content']
         sender = self.scope['user']
         chatroom = data_dict['chat_room']
         images = data_dict['images']
+        
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
                 'type': 'chat_message',
+                'id': id,
                 'sender': serialize_user(sender),
                 'content': content,
                 'chat_room': chatroom,
@@ -37,8 +51,11 @@ class ChatConsumer(WebsocketConsumer):
         sender = event['sender']
         chatroom = event['chat_room']
         images = event['images']
+        id = event['id']
         
         response = {
+            'type': 'message',
+            'id': id,
             'content': content,
             'sent_at': str(datetime.datetime.now(datetime.timezone.utc)),
             'sender': sender,
@@ -46,6 +63,9 @@ class ChatConsumer(WebsocketConsumer):
             'images': images,
         }
         self.send(text_data=json.dumps(response))
+        
+    def delete_message(self, event):
+        self.send(text_data=json.dumps({"type": "delete", "id": event["id"]}))
         
 class NotificationConsumer(WebsocketConsumer):        
     def connect(self):

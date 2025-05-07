@@ -1,3 +1,4 @@
+import { href } from 'react-router-dom';
 import { MessageContentInterface, UrlInterface } from '../types';
 
 export function getCookie(name: string) {
@@ -16,11 +17,12 @@ export function getCookie(name: string) {
 }
 
 export const linkify = (text: string) => {
+  const res: (MessageContentInterface | UrlInterface)[]  = []
+
   const urlRegex = /(?:https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi;
   const noUrlText = text.split(urlRegex);
   const urls = text.match(urlRegex) || [];
-  
-  const res: (MessageContentInterface | UrlInterface)[]  = []
+
   noUrlText.forEach((value, index) => {
     if (value)
       res.push({type: "text", content: value});

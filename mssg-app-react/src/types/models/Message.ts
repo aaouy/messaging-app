@@ -1,16 +1,17 @@
-import { ChatRoomInterface } from "./chatroom";
+import { ChatRoomInterface } from "./ChatRoom";
 import { User } from "./User";
 
 export interface MessageInterface {
-  sender: User | undefined;
+  id: number;
+  sender: User;
   content: string;
-  sentAt: string | undefined;
+  sentAt: string;
   chatRoom: ChatRoomInterface;
   images: string[];
 }
 
 export interface MessageContentInterface {
-  type: 'text';
+  type: "text";
   content: string;
 }
 
