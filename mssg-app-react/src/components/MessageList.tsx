@@ -52,8 +52,8 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
         chatRoom: transformedData.chatRoom,
         images: transformedData.images,
       }
-
       setMessages((messages) => [newMessage, ...messages]);
+
     };
     return () => {
       messageSocket.onmessage = null;
@@ -119,7 +119,6 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
         throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
       }
       const data = await response.json();
-      console.log(data);
 
     } catch (error: any) {
       console.log(error);

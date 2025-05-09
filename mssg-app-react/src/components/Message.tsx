@@ -12,11 +12,10 @@ const Message = ({ includeProfile, deleteMessage, messageId, content, sender, se
     if (!storedUser) {
       throw new Error("Logged in user not found!");
     }
-  
     const user: User = JSON.parse(storedUser);
-
     setLoggedInUser(user);
-  })
+
+  }, [])
 
   const handleGridFormat = () => {
     switch (images.length) {
@@ -86,7 +85,7 @@ const Message = ({ includeProfile, deleteMessage, messageId, content, sender, se
   };
   return (
     <div className="group relative flex pl-4 pt-0.5 pb-0.5 hover:bg-[#f0f0f0] w-full">
-      <div className={`hidden  group-hover:${loggedInUser && loggedInUser.id === sender.id ? "block" : "hidden"} absolute -top-[10px] right-0 bg-transparent`}><Bin onClick={() => deleteMessage(messageId)} className='cursor-pointer hover:scale-[1.1] w-5 p-0 fill-red-600 hover:block'></Bin></div>
+      <div className={`invisible group-hover:${loggedInUser?.id === sender.id ? "invisible group-hover:visible" : "invisible"} absolute -top-[10px] right-0 bg-transparent`}><Bin onClick={() => deleteMessage(messageId)} className='cursor-pointer hover:scale-[1.1] w-5 p-0 fill-red-600'></Bin></div>
       <div className="min-w-[40px] mt-5">
         {includeProfile && (
           <img
