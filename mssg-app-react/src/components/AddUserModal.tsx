@@ -59,7 +59,17 @@ const AddUserModal = ({ chatRoomSocket, modalRef, chatRooms }: AddUserModalProps
       }
 
       const data: ChatRoomResponse = await response.json();
-      chatRoomSocket?.send(JSON.stringify(data));
+
+      const newChatRoomData = {
+        'type': 'new_chat_room',
+        'id': data.id,
+        'num_unread_messages': false,
+        'users': data.users,
+      }
+
+      console.log(chatRoomSocket);
+
+      chatRoomSocket?.send(JSON.stringify(newChatRoomData));
       setUserExists(true);
       setUsername('');
       modalRef.current?.close();

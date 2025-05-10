@@ -1,4 +1,4 @@
-import { ChatRoomInterface } from "../models/chatroom";
+import { ChatRoomInterface } from "../models/ChatRoom";
 
 export interface ChatRoomProps {
   chatRoomName: string;
@@ -6,11 +6,12 @@ export interface ChatRoomProps {
   profilePicture: string;
   handleActiveId: (id: string) => void;
   lastChatRoomref: ((node:HTMLDivElement) => void) | null;
-  numUnreadMssgs: number;
+  deleteChatRoom: () => void;
+  hasUnreadMessages: boolean;
 }
 
 export interface ChatroomListProps {
   chatRooms: ChatRoomInterface[];
   setChatRooms: React.Dispatch<React.SetStateAction<ChatRoomInterface[]>>;
-  notificationSocket: WebSocket | null;
+  chatRoomSocket: WebSocket | null;
 }

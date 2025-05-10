@@ -12,6 +12,7 @@ urlpatterns = [
     path('upload/profile-pic/', views.upload_profile_pic),
     path('user/logout/', views.logout_user),
     path('message/delete/<int:message_id>/', views.delete_message),
+    path('chatroom/delete/<str:chatroom_id>/', views.delete_chat_room),
 ]
 
 

@@ -1,6 +1,6 @@
 import Message from './Message';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { WebSocketMessageResponse, MessageInterface, MessageListProps, GetMessagesResponse, User } from '../types';
+import { WebSocketMessageResponse, MessageInterface, MessageListProps, GetMessagesResponse } from '../types';
 import { useParams } from 'react-router-dom';
 import { convertSnakeToCamel, getCookie } from './utils';
 

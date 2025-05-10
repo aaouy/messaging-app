@@ -7,4 +7,4 @@ def serialize_chatroom(chatroom):
     user_list = []
     for user in chatroom.users.all():
         user_list.append(serialize_user(user))
-    return {'id': chatroom.chatroom_id, 'users': user_list, 'num_unread_mssgs': chatroom.num_unread_mssgs}
+    return {'id': chatroom.chatroom_id, 'users': user_list, 'has_unread_messages': chatroom.has_unread_messages}

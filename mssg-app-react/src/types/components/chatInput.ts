@@ -1,6 +1,6 @@
-import { ChatRoomInterface } from "../models/chatroom";
+import { ChatRoomInterface } from "../models/ChatRoom";
 export interface ChatInputProps {
   messageSocket: WebSocket | null;
   chatRooms: ChatRoomInterface[];
-  notificationSocket: WebSocket | null;
+  chatRoomSocket: WebSocket | null;
 }

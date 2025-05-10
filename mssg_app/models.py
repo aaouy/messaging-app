@@ -11,7 +11,7 @@ class ChatRooms(models.Model):
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=False, through='ChatRoomMembership', related_name="chatrooms")
     chatroom_id = models.UUIDField(default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(default=timezone.now)
-    num_unread_mssgs = models.IntegerField(default=0)
+    has_unread_messages = models.BooleanField(default=False)
 
 class Messages(models.Model):
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="messages")

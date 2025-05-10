@@ -5,7 +5,7 @@ import { ChatRoomInterface, User } from '../types';
 
 const ChatPage = () => {
   const [chatRooms, setChatRooms] = useState<ChatRoomInterface[]>([]);
-  const [notificationSocket, setNotificationSocket] = useState<WebSocket | null>(null); 
+  const [chatRoomSocket, setChatRoomSocket] = useState<WebSocket | null>(null); 
   
   const storedUser: string | null = localStorage.getItem('user');
   if (!storedUser) {
@@ -14,23 +14,23 @@ const ChatPage = () => {
   const user: User = JSON.parse(storedUser);
 
   useEffect(() => {
-    const notificationSocketEndpoint = `ws://localhost:8000/ws/notification/${user.username}/`;
-    const newNotificationSocket = new WebSocket(notificationSocketEndpoint);
+    const chatRoomSocketUrl = `ws://localhost:8000/ws/chatroom/${user.username}/`;
+    const newChatRoomSocket = new WebSocket(chatRoomSocketUrl);
 
-    newNotificationSocket.onopen = () => {
-      console.log('Notification socket opened!');
-      setNotificationSocket(newNotificationSocket);
+    newChatRoomSocket.onopen = () => {
+      console.log('Chat room socket opened!');
+      setChatRoomSocket(newChatRoomSocket);
     }
 
     return () => {
-      newNotificationSocket.close();
+      newChatRoomSocket.close();
     }
   }, [])
 
   return (
     <div className="flex h-full">
-      <ChatRoomList notificationSocket={notificationSocket} chatRooms={chatRooms} setChatRooms={setChatRooms}/>
-      <ChatWindow notificationSocket={notificationSocket} chatRooms={chatRooms} />
+      <ChatRoomList chatRoomSocket={chatRoomSocket} chatRooms={chatRooms} setChatRooms={setChatRooms}/>
+      <ChatWindow chatRoomSocket={chatRoomSocket} chatRooms={chatRooms} />
     </div>
   );
 };

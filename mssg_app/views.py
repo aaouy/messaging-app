@@ -67,7 +67,7 @@ def create_chatroom(request):
     user_list = []
     for user in users:
         user_list.append(serialize_user(user))
-    return JsonResponse({'id': chatroom.chatroom_id, 'users': user_list, 'num_unread_mssgs': 0})
+    return JsonResponse({'id': chatroom.chatroom_id, 'users': user_list, 'has_unread_messages': False})
 
 @login_required
 @require_POST
@@ -167,9 +167,15 @@ def delete_message(request, message_id):
     except Messages.DoesNotExist:
         return HttpResponse("Message does not exist.")
     return JsonResponse({"message": "Message deleted"})
-        
-    
 
+@login_required
+@require_http_methods(["DELETE"])
+def delete_chat_room(request, chatroom_id):
+    try:
+        ChatRooms.objects.get(chatroom_id=chatroom_id).delete()
+    except ChatRooms.DoesNotExist:
+        return JsonResponse({"message": "Chat room does not exist"})
+    return JsonResponse({"message": "Chat room deleted."})
 
     
         

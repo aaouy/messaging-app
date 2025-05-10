@@ -67,38 +67,7 @@ class ChatConsumer(WebsocketConsumer):
     def delete_message(self, event):
         self.send(text_data=json.dumps({"type": "delete", "id": event["id"]}))
         
-class NotificationConsumer(WebsocketConsumer):        
-    def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['username']
-        self.room_group_name = f'notification_{self.room_name}'
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name,
-            self.channel_name,
-        )
-        self.accept() 
-    
-    def receive(self, text_data):
-        text_data_dict = json.loads(text_data)
-        recipients = text_data_dict['recipients']
-        chatroom_id = text_data_dict['chat_room_id']
-        for recipient in recipients:
-            username = recipient['username']
-            async_to_sync(self.channel_layer.group_send)(
-                f'notification_{username}',
-                {
-                    'type': 'send_notification',
-                    'chatroom_id': chatroom_id,
-                }
-            )
-            
-    def send_notification(self, event):
-        chatroom_id = event['chatroom_id']
-        response = {
-            'chat_room_id': chatroom_id,
-        }
-        self.send(text_data=json.dumps(response))
-        
-class NewChatroom(WebsocketConsumer):        
+class ChatRoomConsumer(WebsocketConsumer):
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['username']
         self.room_group_name = f'chatroom_{self.room_name}'
@@ -110,28 +79,54 @@ class NewChatroom(WebsocketConsumer):
     
     def receive(self, text_data):
         text_data_dict = json.loads(text_data)
-        users = text_data_dict['users']
-        chatroom_id = text_data_dict['id']
-        for user in users:
-            username = user['username']
-            async_to_sync(self.channel_layer.group_send)(
-                f'chatroom_{username}',
-                {
-                    'type': 'new_chatroom',
-                    'chatroom_id': chatroom_id,
-                    'users': users,
-                }
-            )
-            
+        type = text_data_dict['type']
+        if type == 'notification':
+            recipients = text_data_dict['recipients']
+            chatroom_id = text_data_dict['chat_room_id']
+            for recipient in recipients:
+                username = recipient['username']
+                print(username)
+                print(self.room_group_name)
+                async_to_sync(self.channel_layer.group_send)(
+                    f'chatroom_{username}',
+                    {
+                        'type': 'send_notification',
+                        'chatroom_id': chatroom_id,
+                    }
+                )
+        elif type == 'new_chat_room':
+            users = text_data_dict['users']
+            chatroom_id = text_data_dict['id']
+            for user in users:
+                username = user['username']
+                async_to_sync(self.channel_layer.group_send)(
+                    f'chatroom_{username}',
+                    {
+                        'type': 'new_chatroom',
+                        'chatroom_id': chatroom_id,
+                        'users': users,
+                    }
+                )
+
+    def send_notification(self, event):
+        chatroom_id = event['chatroom_id']
+        response = {
+            'type': 'notification',
+            'chat_room_id': chatroom_id,
+        }
+        self.send(text_data=json.dumps(response))
+    
     def new_chatroom(self, event):
         chatroom_id = event['chatroom_id']
         users = event['users']
         response = {
+            'type': 'new_chat_room',
             'id': chatroom_id,
             'users': users,
-            'num_unread_mssgs': 0
         }
         self.send(text_data=json.dumps(response))
+    
+        
 
 
     

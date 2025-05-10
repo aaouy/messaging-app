@@ -4,7 +4,7 @@ import { ChatInputProps, MessageResponse } from '../types';
 import { getCookie } from './utils';
 import Bin from '../assets/bin.svg?react';
 
-const ChatInput = ({ notificationSocket, messageSocket, chatRooms }: ChatInputProps) => {
+const ChatInput = ({ chatRoomSocket, messageSocket, chatRooms }: ChatInputProps) => {
   const [message, setMessage] = useState<string>('');
   const [images, setImages] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -76,7 +76,7 @@ const ChatInput = ({ notificationSocket, messageSocket, chatRooms }: ChatInputPr
 
       console.log('Message saved!');
 
-      if (notificationSocket && messageSocket && (message.trim() || (!message.trim() && images.length > 0))) {
+      if (chatRoomSocket && messageSocket && (message.trim() || (!message.trim() && images.length > 0))) {
         messageSocket.send(JSON.stringify(data));
 
         const storedUser: string | null = localStorage.getItem('user');
@@ -86,8 +86,9 @@ const ChatInput = ({ notificationSocket, messageSocket, chatRooms }: ChatInputPr
 
         const index = chatRooms.findIndex((chatRoom) => chatRoom.id === selectedChatRoom);
         const members = chatRooms[index].users;
-        notificationSocket.send(
-          JSON.stringify({ recipients: members, chat_room_id: selectedChatRoom })
+        console.log(members);
+        chatRoomSocket.send(
+          JSON.stringify({ type: 'notification', recipients: members, chat_room_id: selectedChatRoom })
         );
       }
     } catch (error: any) {
