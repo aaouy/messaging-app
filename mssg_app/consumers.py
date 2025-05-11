@@ -85,8 +85,6 @@ class ChatRoomConsumer(WebsocketConsumer):
             chatroom_id = text_data_dict['chat_room_id']
             for recipient in recipients:
                 username = recipient['username']
-                print(username)
-                print(self.room_group_name)
                 async_to_sync(self.channel_layer.group_send)(
                     f'chatroom_{username}',
                     {

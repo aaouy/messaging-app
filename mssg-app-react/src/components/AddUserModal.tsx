@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AddUserModalProps, CreateChatRoomRequest, ChatRoomResponse, User } from '../types/index';
+import { AddUserModalProps, CreateChatRoomRequest, CreateChatRoomResponse, NewChatRoomSocketRequest, User } from '../types/index';
 import { getCookie } from './utils';
 
 const AddUserModal = ({ chatRoomSocket, modalRef, chatRooms }: AddUserModalProps) => {
@@ -24,8 +24,8 @@ const AddUserModal = ({ chatRoomSocket, modalRef, chatRooms }: AddUserModalProps
 
     for (const chatRoom of chatRooms) {
       const users = chatRoom.users;
-      const [ res ] = users.filter((user) => user.id !== loggedInUser.id);
-      if (res.username === username) {
+      const [ user ] = users.filter((user) => user.id !== loggedInUser.id);
+      if (user.username === username) {
         modalRef.current?.close();
         navigate(`/message/${chatRoom.id}`);
         return;
@@ -58,16 +58,13 @@ const AddUserModal = ({ chatRoomSocket, modalRef, chatRooms }: AddUserModalProps
         throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
       }
 
-      const data: ChatRoomResponse = await response.json();
-
-      const newChatRoomData = {
-        'type': 'new_chat_room',
-        'id': data.id,
-        'num_unread_messages': false,
-        'users': data.users,
+      const data: CreateChatRoomResponse = await response.json();
+      
+      const newChatRoomData: NewChatRoomSocketRequest  = {
+        type: 'new_chat_room',
+        id: data.id,
+        users: data.users,
       }
-
-      console.log(chatRoomSocket);
 
       chatRoomSocket?.send(JSON.stringify(newChatRoomData));
       setUserExists(true);

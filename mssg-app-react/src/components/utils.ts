@@ -1,4 +1,3 @@
-import { href } from 'react-router-dom';
 import { MessageContentInterface, UrlInterface } from '../types';
 
 export function getCookie(name: string) {

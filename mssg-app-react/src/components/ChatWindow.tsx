@@ -4,13 +4,13 @@ import { ChatWindowProps } from '../types';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-const ChatWindow = ({ chatRoomSocket, chatRooms}: ChatWindowProps) => {
+const ChatWindow = ({ chatRoomSocket, chatRooms }: ChatWindowProps) => {
   const { selectedChatRoom } = useParams();
   const [messageSocket, setMessageSocket] = useState<WebSocket | null>(null);
 
   useEffect(() => {
-    const webSocketUrl = `ws://localhost:8000/ws/chat/${selectedChatRoom}/`;
-    const newMessageSocket = new WebSocket(webSocketUrl);
+    const messageSocketUrl = `ws://localhost:8000/ws/chat/${selectedChatRoom}/`;
+    const newMessageSocket = new WebSocket(messageSocketUrl);
 
     newMessageSocket.onopen = () => {
       console.log('Message socket opened!');
@@ -20,7 +20,6 @@ const ChatWindow = ({ chatRoomSocket, chatRooms}: ChatWindowProps) => {
     return () => {
       newMessageSocket.close();
     };
-
   }, [selectedChatRoom]);
 
   if (!selectedChatRoom) return <div className="w-[80vw] h-[90vh]"></div>;

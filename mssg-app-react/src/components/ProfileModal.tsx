@@ -1,22 +1,29 @@
 import Cropper from 'react-easy-crop';
 import { Point, Area } from 'react-easy-crop';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { getCookie } from './utils';
-import { ProfileModalProps } from '../types';
-
+import { ProfileModalProps, User } from '../types';
 
 const ProfileModal = ({ modalRef }: ProfileModalProps) => {
   const [imgSrc, setImgSrc] = useState<string>('');
   const [zoom, setZoom] = useState<number>(1);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [loggedInUser, setLoggedInUser] = useState<User>();
 
-  const storedUser = localStorage.getItem('user');
-  if (!storedUser) {
-    throw new Error("Logged in user not found!");
-  }
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (!storedUser) {
+        throw new Error('Logged in user not found!');
+      }
 
-  const user = JSON.parse(storedUser);
+      const user = JSON.parse(storedUser);
+      setLoggedInUser(user);
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
   const onCropChange = (newCrop: Point) => {
     setCrop(newCrop);
@@ -101,28 +108,26 @@ const ProfileModal = ({ modalRef }: ProfileModalProps) => {
     formData.append('cropped_image', croppedBlob, 'profile.jpg');
 
     try {
-      
       const uploadProfilePictureUrl = 'http://localhost:8000/upload/profile-pic/';
       const csrfCookie = getCookie('csrftoken');
-      if (!csrfCookie)
-        throw new Error("CSRF cookie was not able to be fetched from the browser!");
+      if (!csrfCookie) throw new Error('CSRF cookie was not able to be fetched from the browser!');
 
       const response = await fetch(uploadProfilePictureUrl, {
-        method: "POST",
+        method: 'POST',
         credentials: 'include',
         headers: {
-          "X-CSRFToken": csrfCookie
+          'X-CSRFToken': csrfCookie,
         },
-        body: formData
-      })
+        body: formData,
+      });
 
       if (!response.ok)
         throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
+      if (!loggedInUser) throw new Error('No user logged in!');
 
       const data = await response.json();
-      user.profilePicture = data.profile_pic;
-      localStorage.setItem('user', JSON.stringify(user));
-
+      loggedInUser.profilePicture = data.profile_pic;
+      localStorage.setItem('user', JSON.stringify(loggedInUser));
     } catch (error: any) {
       console.error(error);
     }
@@ -131,12 +136,19 @@ const ProfileModal = ({ modalRef }: ProfileModalProps) => {
   };
 
   return (
-    <dialog className="w-[50vw] h-[80vh] border-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" ref={modalRef} onClick={closeModal}>
+    <dialog
+      className="w-[50vw] h-[80vh] border-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+      ref={modalRef}
+      onClick={closeModal}
+    >
       <div className="flex flex-col pl-[2%] p-[2%] w-full h-full">
         <div className="flex w-1/3 h-[10%] justify-evenly items-center">
-          <h3 className='text-black w-1/2'>Edit Image</h3>
+          <h3 className="text-black w-1/2">Edit Image</h3>
           <form className="flex items-center justify-between ">
-            <label className="p-1 pl-3 pr-3 rounded-sm bg-black cursor-pointer text-white inline-block" htmlFor="pfp-img-input">
+            <label
+              className="p-1 pl-3 pr-3 rounded-sm bg-black cursor-pointer text-white inline-block"
+              htmlFor="pfp-img-input"
+            >
               Upload
             </label>
             <input
@@ -150,19 +162,19 @@ const ProfileModal = ({ modalRef }: ProfileModalProps) => {
           </form>
         </div>
         <div className="bg-[#f5f5f5] w-full h-full relative">
-            {imgSrc && (
-              <Cropper
-                image={imgSrc}
-                crop={crop}
-                cropShape="round"
-                showGrid={false}
-                zoom={zoom}
-                aspect={1}
-                onCropChange={onCropChange}
-                onCropComplete={onCropCompleteCallback}
-                onZoomChange={onZoomChange}
-              ></Cropper>
-            )}
+          {imgSrc && (
+            <Cropper
+              image={imgSrc}
+              crop={crop}
+              cropShape="round"
+              showGrid={false}
+              zoom={zoom}
+              aspect={1}
+              onCropChange={onCropChange}
+              onCropComplete={onCropCompleteCallback}
+              onZoomChange={onZoomChange}
+            ></Cropper>
+          )}
         </div>
         <div className="flex justify-center items-center h-1/10 w-full">
           {imgSrc && (
@@ -182,7 +194,10 @@ const ProfileModal = ({ modalRef }: ProfileModalProps) => {
             <button className="cursor-pointer text-black" onClick={handleCloseButton}>
               Cancel
             </button>
-            <button onClick={handleApply} className="bg-black p-2 pl-4 pr-4 text-white cursor-pointer">
+            <button
+              onClick={handleApply}
+              className="bg-black p-2 pl-4 pr-4 text-white cursor-pointer"
+            >
               Apply
             </button>
           </div>

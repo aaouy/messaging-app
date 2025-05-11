@@ -1,9 +1,9 @@
 import { ChatRoomInterface } from "../models/ChatRoom";
 
 export interface ChatRoomProps {
-  chatRoomName: string;
+  chatRoomName: string | undefined;
   chatRoomId: string;
-  profilePicture: string;
+  profilePicture: string | undefined;
   handleActiveId: (id: string) => void;
   lastChatRoomref: ((node:HTMLDivElement) => void) | null;
   deleteChatRoom: () => void;

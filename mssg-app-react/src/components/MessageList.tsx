@@ -101,11 +101,12 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
 
   const deleteMessage = async (messageId: number) => {
     const deleteMessageUrl = `http://localhost:8000/message/delete/${messageId}/`;
-    const csrfCookie = getCookie("csrftoken");
-    if (!csrfCookie)
-      return;
 
     try {
+      const csrfCookie = getCookie("csrftoken");
+      if (!csrfCookie)
+        throw new Error("CSRF cookie was not able to be fetched.");
+      
       const response = await fetch(deleteMessageUrl, {
         method: "DELETE",
         credentials: 'include',

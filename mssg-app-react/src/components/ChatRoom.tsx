@@ -36,7 +36,7 @@ const ChatRoom = ({
       ></div>
       <h3>{chatRoomName}</h3>
       <div className="absolute right-0 top-0 p-1 hover:scale-120">
-        <DeleteIcon onClick={deleteChatRoom} className="fill-black w-4 h-4"></DeleteIcon>
+        {selectedChatRoom === chatRoomId && <DeleteIcon onClick={deleteChatRoom} className="fill-black w-4 h-4"></DeleteIcon>}
       </div>
     </div>
   );

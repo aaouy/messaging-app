@@ -23,7 +23,7 @@ export interface NewChatRoomResponse {
 
 export interface CreateChatRoomResponse {
     id: string;
-    users: UserResponse;
+    users: UserResponse[];
     has_unread_messages: boolean;
 }
 

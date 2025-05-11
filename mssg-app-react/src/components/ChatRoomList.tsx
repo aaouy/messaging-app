@@ -7,7 +7,7 @@ import {
   User,
 } from '../types';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import ChatRoom from './ChatRoom.tsx';
 import ProfileBar from './ProfileBar.tsx';
 import NewMessageIcon from '../assets/new-message-icon.svg?react';
@@ -20,16 +20,26 @@ const ChatRoomList = ({ chatRoomSocket, setChatRooms, chatRooms }: ChatroomListP
   const hasNextRef = useRef<boolean>(false);
   const observer = useRef<IntersectionObserver | null>(null);
   const { selectedChatRoom } = useParams();
+  const [loggedInUser, setLoggedInUser] = useState<User>();
   const navigate = useNavigate();
 
-  const storedUser = localStorage.getItem('user');
-  if (!storedUser) {
-    throw new Error('Logged in user not found!');
-  }
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      throw new Error('Logged in user not found!');
+    }
+  
+    const user: User = JSON.parse(storedUser);
+    setLoggedInUser(user);
+    getChatrooms(1);
 
-  const loggedInUser: User = JSON.parse(storedUser);
+  }, [])
+
 
   const getChatroomInfo = (chatRoom: ChatRoomInterface) => {
+    if (!loggedInUser)
+      return;
+
     const users = chatRoom.users;
     const [user] = users.filter((user: User) => loggedInUser.id !== user.id);
     return user;
@@ -50,10 +60,10 @@ const ChatRoomList = ({ chatRoomSocket, setChatRooms, chatRooms }: ChatroomListP
         throw new Error(`Response failed with status ${response.status}: ${response.statusText}`);
 
       const data: GetChatRoomResponse = await response.json();
-
-      if (data.chat_rooms.length === 0) return;
-
       const transformedData = convertSnakeToCamel(data);
+
+      if (transformedData.chatRooms.length === 0) return;
+
 
       transformedData.chatRooms.forEach((chatRoom: ChatRoomInterface) => {
         setChatRooms((chatRooms) => [...chatRooms, chatRoom]);
@@ -67,10 +77,13 @@ const ChatRoomList = ({ chatRoomSocket, setChatRooms, chatRooms }: ChatroomListP
 
   const deleteChatRoom = async (chatRoomId: string, index: number) => {
     const deleteChatRoomUrl = `http://localhost:8000/chatroom/delete/${chatRoomId}/`;
-    const csrfCookie = getCookie('csrftoken');
-    if (!csrfCookie) return;
 
     try {
+
+      const csrfCookie = getCookie('csrftoken');
+      if (!csrfCookie)
+        throw new Error('The CSRF token could not be fetched from the browser!');
+
       const response = await fetch(deleteChatRoomUrl, {
         method: 'DELETE',
         credentials: 'include',
@@ -95,14 +108,6 @@ const ChatRoomList = ({ chatRoomSocket, setChatRooms, chatRooms }: ChatroomListP
     }
   };
 
-  const addChatRoom = (newChatRoom: ChatRoomInterface) => {
-    setChatRooms((chatRooms) => [newChatRoom, ...chatRooms]);
-  };
-
-  useEffect(() => {
-    getChatrooms(1);
-  }, [])
-
   useEffect(() => {
     if (!chatRoomSocket) return;
 
@@ -112,19 +117,19 @@ const ChatRoomList = ({ chatRoomSocket, setChatRooms, chatRooms }: ChatroomListP
       if (data.type === 'new_chat_room') {
         const transformedData = convertSnakeToCamel(data);
 
-        const chatroom: ChatRoomInterface = {
+        const chatRoom: ChatRoomInterface = {
           users: transformedData.users,
           id: transformedData.id,
           hasUnreadMessages: false,
         };
 
-        addChatRoom(chatroom);
+        setChatRooms((chatRooms) => [chatRoom, ...chatRooms])
 
       } else if (data.type === 'notification') {
         const index = chatRooms.findIndex((chatRoom) => chatRoom.id === data.chat_room_id);
         const chatRoom = chatRooms[index];
 
-        if (selectedChatRoom !== chatRoom.id) chatRoom.hasUnreadMessages = true; // if not the currently selected chatroom, add 1.
+        if (selectedChatRoom !== chatRoom.id) chatRoom.hasUnreadMessages = true;
 
         setChatRooms((oldChatRooms) => [
           chatRoom,
@@ -180,9 +185,9 @@ const ChatRoomList = ({ chatRoomSocket, setChatRooms, chatRooms }: ChatroomListP
             lastChatRoomref={index === chatRooms.length - 1 ? lastChatRoomRef : null}
             deleteChatRoom={() => deleteChatRoom(chatRoom.id, index)}
             hasUnreadMessages={chatRoom.hasUnreadMessages}
-            chatRoomName={getChatroomInfo(chatRoom).username}
+            chatRoomName={getChatroomInfo(chatRoom)?.username}
             chatRoomId={chatRoom.id}
-            profilePicture={getChatroomInfo(chatRoom).profilePicture}
+            profilePicture={getChatroomInfo(chatRoom)?.profilePicture}
             handleActiveId={handleChatRoomSelect}
             key={index}
           />
