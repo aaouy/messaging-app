@@ -14,7 +14,7 @@ const ChatPage = () => {
     }
 
     const user: User = JSON.parse(storedUser);
-    
+
     const chatRoomSocketUrl = `ws://localhost:8000/ws/chatroom/${user.username}/`;
     const newChatRoomSocket = new WebSocket(chatRoomSocketUrl);
 

@@ -24,6 +24,7 @@ const ChatRoomList = ({ chatRoomSocket, setChatRooms, chatRooms }: ChatroomListP
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('bruh');
     const storedUser = localStorage.getItem('user');
     if (!storedUser) {
       throw new Error('Logged in user not found!');
@@ -31,6 +32,7 @@ const ChatRoomList = ({ chatRoomSocket, setChatRooms, chatRooms }: ChatroomListP
   
     const user: User = JSON.parse(storedUser);
     setLoggedInUser(user);
+    setChatRooms([]);
     getChatrooms(1);
 
   }, [])
@@ -64,11 +66,11 @@ const ChatRoomList = ({ chatRoomSocket, setChatRooms, chatRooms }: ChatroomListP
 
       if (transformedData.chatRooms.length === 0) return;
 
-
       transformedData.chatRooms.forEach((chatRoom: ChatRoomInterface) => {
         setChatRooms((chatRooms) => [...chatRooms, chatRoom]);
         currentPageRef.current = transformedData.currentPage;
         hasNextRef.current = transformedData.hasNext;
+
       });
     } catch (error: any) {
       console.error(error);
@@ -79,7 +81,6 @@ const ChatRoomList = ({ chatRoomSocket, setChatRooms, chatRooms }: ChatroomListP
     const deleteChatRoomUrl = `http://localhost:8000/chatroom/delete/${chatRoomId}/`;
 
     try {
-
       const csrfCookie = getCookie('csrftoken');
       if (!csrfCookie)
         throw new Error('The CSRF token could not be fetched from the browser!');
@@ -165,7 +166,7 @@ const ChatRoomList = ({ chatRoomSocket, setChatRooms, chatRooms }: ChatroomListP
   const handleChatRoomSelect = (id: string) => {
     setChatRooms((oldChatRooms) =>
       oldChatRooms.map((chatRoom) =>
-        chatRoom.id === id ? { ...chatRoom, unread_messages: 0 } : chatRoom
+        chatRoom.id === id ? { ...chatRoom, hasUnreadMessages: false } : chatRoom
       )
     );
   };
