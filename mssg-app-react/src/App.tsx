@@ -16,7 +16,7 @@ function App() {
           path="/login"
           element={<Login/>}
         ></Route>
-        <Route path="/message/:selectedChatRoom" element={<ChatPage />}></Route>
+        <Route path="/message/:selectedChatRoom?" element={<ChatPage />}></Route>
       </Routes>
     </Router>
 

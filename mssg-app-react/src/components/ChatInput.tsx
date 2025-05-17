@@ -8,6 +8,7 @@ const ChatInput = ({ chatRoomSocket, messageSocket, chatRooms }: ChatInputProps)
   const [message, setMessage] = useState<string>('');
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [showMaxImageAlert, setShowMaxImageAlert] = useState(false);
   const { selectedChatRoom } = useParams();
 
   const updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,8 +20,18 @@ const ChatInput = ({ chatRoomSocket, messageSocket, chatRooms }: ChatInputProps)
     setImageUrls(newImages);
   };
 
+  const closeMaxImageAlert = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setShowMaxImageAlert(false);
+  }
+
   const handleImagePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
     if (!event.clipboardData) return;
+
+    if (imageUrls.length >= 5) {
+      setShowMaxImageAlert(true);
+      return;
+    }
 
     for (const item of event.clipboardData?.items) {
       if (item.type.indexOf('image') !== -1) {
@@ -100,6 +111,29 @@ const ChatInput = ({ chatRoomSocket, messageSocket, chatRooms }: ChatInputProps)
   };
   return (
     <>
+      {' '}
+      {showMaxImageAlert && (
+        <div
+          className="bg-red-100 border fixed border-red-400 w-2/5 text-red-700 px-4 py-3 rounded left-1/2 -translate-x-1/2"
+          role="alert"
+        >
+          <strong className="font-bold">Too many uploads! </strong>
+          <span className="block sm:inline">You can only upload 5 files at a time.</span>
+          <span className="absolute top-0 right-0 px-4 py-3">
+            <button onClick={closeMaxImageAlert}>
+              <svg
+                className="fill-current h-6 w-6 cursor-pointer hover:scale-120 text-red-500"
+                role="button"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <title>Close</title>
+                <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+              </svg>
+            </button>
+          </span>
+        </div>
+      )}
       <div className="box-border flex flex-col p-3 justify-center bg-inherit">
         <div className=" border-[#e0e0e0] border-1 rounded-lg">
           {imageUrls.length !== 0 && (
