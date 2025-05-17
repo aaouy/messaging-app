@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '../types';
 import { convertSnakeToCamel, getCookie } from './utils';
+import SuccessAlert from './SuccessAlert';
+import FailureAlert from './FailureAlert';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -68,9 +70,9 @@ const Login = () => {
       setTimeout(() => {
         navigate('/message');
       }, 1000);
-
     } catch (error: any) {
       console.error(error);
+      setIsLoading(false);
       setShowAlert(true);
     }
   };
@@ -96,26 +98,7 @@ const Login = () => {
   return (
     <>
       {loginSuccessful && (
-        <div
-          className="bg-teal-100 fixed left-1/2 -translate-x-1/2 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md"
-          role="alert"
-        >
-          <div className="flex">
-            <div className="py-1">
-              <svg
-                className="fill-current h-6 w-6 text-teal-500 mr-4"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-              >
-                <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
-              </svg>
-            </div>
-            <div>
-              <p className="font-bold">Login Sucessful!</p>
-              <p className="text-sm">Enjoy your time.</p>
-            </div>
-          </div>
-        </div>
+        <SuccessAlert header="Login Successful!" description="Enjoy your time."></SuccessAlert>
       )}
       <div className="flex relative left-1/2 top-1/2 rounded-md -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/2 border-1">
         <div className="flex flex-col text-white justify-center items-center w-1/2 h-full rounded-r-full bg-gray-400">
@@ -130,28 +113,11 @@ const Login = () => {
         </div>
         <div className="flex flex-col justify-center items-center w-1/2 py-15 px-2">
           <h1 className="text-2xl font-semibold mb-2">Login</h1>
-          <div
-            className={`${
-              showAlert ? 'visible' : 'invisible'
-            } bg-red-100 text-sm border relative border-red-400 w-3/4 text-red-700 px-1 py-3 rounded
-          `}
-            role="alert"
-          >
-            <span className="block sm:inline">Incorrect username or password.</span>
-            <span className="absolute top-0 right-0 pr-2 py-3">
-              <button onClick={closeAlert}>
-                <svg
-                  className="fill-current h-5 w-5 cursor-pointer hover:scale-120 text-red-500"
-                  role="button"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <title>Close</title>
-                  <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
-                </svg>
-              </button>
-            </span>
-          </div>
+          <FailureAlert
+            showAlert={showAlert}
+            closeAlert={closeAlert}
+            errorMessage="Incorrect username or password."
+          ></FailureAlert>
           <form
             className="flex items-center justify-center flex-col w-full h-full p-[3%]"
             onSubmit={handleSubmit}

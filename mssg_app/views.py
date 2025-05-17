@@ -5,6 +5,7 @@ from django.views.decorators.http import require_POST, require_GET, require_http
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
 from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 from django.db.models import Max, F
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -21,9 +22,13 @@ def get_csrf_token(request):
 def create_user(request):
     data = json.loads(request.body)
     try:
+        if not data['password']:
+            raise ValidationError("Password cannot be empty!")
         Profile.objects.create_user(username=data['username'], password=data['password'])
     except IntegrityError:
         return JsonResponse({'error': 'Username already exists'}, status=400)
+    except ValidationError:
+        return JsonResponse({"error": "Invalid fields"}, status=500)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
     else:
