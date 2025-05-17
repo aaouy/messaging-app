@@ -38,7 +38,7 @@ const SettingsModal = ({settingsModalRef} : SettingsModalProps) => {
     <dialog ref={settingsModalRef} onClick={closeModal} className="w-[25vw] h-[50vh] fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       <div className="flex w-full h-full flex-col">
         <ul className="list-none w-full h-full">
-          <li onClick={handleLogout} className="cursor-pointer flex h-1/8 items-center justify-center text-black border-[#e0e0e0] border-b-[1px]">
+          <li onClick={handleLogout} className="hover:bg-[#d1d1d1] cursor-pointer flex h-1/8 items-center justify-center text-black border-[#e0e0e0] border-b-[1px]">
             Logout
           </li>
         </ul>

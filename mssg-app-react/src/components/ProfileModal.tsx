@@ -146,7 +146,7 @@ const ProfileModal = ({ modalRef }: ProfileModalProps) => {
           <h3 className="text-black w-1/2">Edit Image</h3>
           <form className="flex items-center justify-between ">
             <label
-              className="p-1 pl-3 pr-3 rounded-sm bg-black cursor-pointer text-white inline-block"
+              className="hover:scale-105 p-1 pl-3 pr-3 rounded-sm bg-black cursor-pointer text-white inline-block"
               htmlFor="pfp-img-input"
             >
               Upload
@@ -196,7 +196,7 @@ const ProfileModal = ({ modalRef }: ProfileModalProps) => {
             </button>
             <button
               onClick={handleApply}
-              className="bg-black p-2 pl-4 pr-4 text-white cursor-pointer"
+              className="hover:scale-105 bg-black p-2 pl-4 pr-4 text-white cursor-pointer"
             >
               Apply
             </button>
