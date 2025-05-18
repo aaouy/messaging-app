@@ -147,7 +147,7 @@ const MessageList = ({ messageSocket }: MessageListProps) => {
   );
 
   return (
-    <div className="flex flex-col-reverse h-full overflow-scroll pr-[100px] pb-5 pt-5">
+    <div className="flex flex-col-reverse h-9/10 overflow-scroll pr-[80px] pb-5 pt-5">
       {messages.map((message, index) => (
         <div className='flex'
           ref={index === messages.length - 1 ? handlePagination : null}

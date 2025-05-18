@@ -154,20 +154,7 @@ const Login = () => {
                       fill="none"
                       strokeDasharray="32"
                       strokeDashoffset="32"
-                    >
-                      <animate
-                        attributeName="stroke-dasharray"
-                        dur="2s"
-                        values="0 32;16 16;0 32;0 32"
-                        repeatCount="indefinite"
-                      />
-                      <animate
-                        attributeName="stroke-dashoffset"
-                        dur="2s"
-                        values="0;-16;-32;-32"
-                        repeatCount="indefinite"
-                      />
-                    </circle>
+                    ></circle>
                   </svg>
                 </>
               ) : (
