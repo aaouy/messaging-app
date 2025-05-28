@@ -1,5 +1,5 @@
 export interface FailureAlertProps {
     showAlert: boolean;
-    closeAlert: (event: React.MouseEvent<HTMLButtonElement>) => void;
+    setShowAlert: (showAlert: boolean) => void;
     errorMessage: string;
 }

@@ -40,7 +40,7 @@ const SettingsModal = ({ settingsModalRef }: SettingsModalProps) => {
     <dialog
       ref={settingsModalRef}
       onClick={closeModal}
-      className="w-[25vw] h-[50vh] fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+      className="w-[70vw] h-[50vh] lg:w-[30vw] lg:h-[40vh] fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
     >
       <div className="flex w-full h-full flex-col">
         <ul className="list-none w-full h-full">

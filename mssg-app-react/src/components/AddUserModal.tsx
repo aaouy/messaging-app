@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SuccessAlert from './SuccessAlert';
 import {
   AddUserModalProps,
   CreateChatRoomRequest,
@@ -12,6 +13,7 @@ import { getCookie } from './utils';
 const AddUserModal = ({ chatRoomSocket, modalRef, chatRooms }: AddUserModalProps) => {
   const [username, setUsername] = useState<string>('');
   const [userExists, setUserExists] = useState<boolean>(true);
+  const [chatRoomCreated, setChatRoomCreated] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const storedUser = localStorage.getItem('user');
@@ -74,11 +76,16 @@ const AddUserModal = ({ chatRoomSocket, modalRef, chatRooms }: AddUserModalProps
 
       chatRoomSocket?.send(JSON.stringify(newChatRoomData));
       setUserExists(true);
+      setChatRoomCreated(true);
+      setTimeout(() => {
+        setChatRoomCreated(false);
+      }, 2000);
       setUsername('');
       modalRef.current?.close();
       navigate(`/message/${data.id}`);
     } catch (error: any) {
       setUserExists(false);
+      setChatRoomCreated(false);
       console.error(error);
     }
   };
@@ -92,34 +99,65 @@ const AddUserModal = ({ chatRoomSocket, modalRef, chatRooms }: AddUserModalProps
   };
 
   return (
-    <dialog
-      className="border-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-      ref={modalRef}
-      onClick={closeModal}
-    >
-      <div className="w-[30vw] h-[30vh] flex flex-col p-3">
-        <h2 className="grow text-[25px] text-black text-center font-medium">New Message</h2>
-        <div className="flex grow-2">
-          <form
-            className="w-full flex flex-col justify-evenly items-center text-white"
-            onSubmit={handleSubmit}
-          >
-            <input
-              className="text-black w-3/4 text-sm mb-[10px] rounded-lg p-2 bg-[#f5f5f5] outline-none"
-              onChange={updateUser}
-              type="text"
-              value={username}
-              placeholder="Add a user..."
-            />
-            <input
-              className="w-1/2 h-9 hover:scale-101 font-medium bg-black text-sm hover:cursor-pointer rounded-md"
-              type="submit"
-              value="Add User"
-            />
-          </form>
+    <>
+      {chatRoomCreated && (
+        <SuccessAlert
+          header="Chat room created successfully"
+          description="Enjoy talking!"
+        ></SuccessAlert>
+      )}
+      {!userExists && (
+        <div className="fixed left-1/2 -translate-x-1/2 bg-red-100 text-sm border border-red-400 w-1/3 text-red-700 px-2 py-3 rounded">
+          <span className="block sm:inline">User does not exist!</span>
+          <span className="absolute top-0 right-0 pr-2 py-3">
+            <button
+              onClick={(event) => {
+                event.preventDefault();
+                setUserExists(true);
+              }}
+            >
+              <svg
+                className="fill-current h-5 w-5 cursor-pointer hover:scale-120 text-red-500"
+                role="button"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <title>Close</title>
+                <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+              </svg>
+            </button>
+          </span>
         </div>
-      </div>
-    </dialog>
+      )}
+      <dialog
+        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+        ref={modalRef}
+        onClick={closeModal}
+      >
+        <div className="w-[80vw] lg:w-[30vw] h-[30vh] flex flex-col p-3">
+          <h2 className="grow text-[25px] text-black text-center font-medium">New Message</h2>
+          <div className="flex grow-2">
+            <form
+              className="w-full flex flex-col justify-evenly items-center text-white"
+              onSubmit={handleSubmit}
+            >
+              <input
+                className="text-black w-3/4 text-sm mb-[10px] rounded-lg p-2 bg-[#f5f5f5] outline-none"
+                onChange={updateUser}
+                type="text"
+                value={username}
+                placeholder="Add a user..."
+              />
+              <input
+                className="w-1/2 h-9 hover:scale-101 font-medium bg-black text-sm hover:cursor-pointer rounded-md"
+                type="submit"
+                value="Add User"
+              />
+            </form>
+          </div>
+        </div>
+      </dialog>
+    </>
   );
 };
 

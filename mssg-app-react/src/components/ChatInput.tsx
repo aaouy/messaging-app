@@ -130,16 +130,16 @@ const ChatInput = ({ chatRoomSocket, messageSocket, chatRooms }: ChatInputProps)
   };
   return (
     <>
-      <div className="box-border items-center flex flex-col px-2 justify-center">
-        <div className="w-full flex items-center justify-center pb-3">
-          {showMaxImageAlert && (
+      <div className="box-border p-2 items-center flex flex-col justify-center">
+        {showMaxImageAlert && (
+          <div className="w-full flex items-center justify-center pb-3">
             <FailureAlert
               showAlert={showMaxImageAlert}
-              closeAlert={closeMaxImageAlert}
+              setShowAlert={setShowMaxImageAlert}
               errorMessage="Too many uploads! You can only upload 5 files at a time!"
             ></FailureAlert>
-          )}
-        </div>
+          </div>
+        )}
         <div className=" border-[#e0e0e0] relative w-full border-1 rounded-lg">
           {imageUrls.length !== 0 && (
             <div className="flex h-[30vh] p-5 bg-white overflow-scroll">
@@ -166,7 +166,7 @@ const ChatInput = ({ chatRoomSocket, messageSocket, chatRooms }: ChatInputProps)
           )}
           <form onSubmit={handleMessageSubmit}>
             <textarea
-              className="w-19/20 px-2 max-h-[40vh] overflow-y-scroll content-center outline-none text-[black]"
+              className="w-19/20 px-2 max-h-[40vh] overflow-y-scroll content-center outline-none text-[black] resize-none"
               value={message}
               onChange={updateInput}
               placeholder="Message..."
@@ -175,7 +175,11 @@ const ChatInput = ({ chatRoomSocket, messageSocket, chatRooms }: ChatInputProps)
             />
           </form>
           {showMaxMessageLengthAlert && (
-            <div className={`${message.length > 2000 ?`text-red-600` : "text-black"} absolute right-0 bottom-0 p-1`}>
+            <div
+              className={`${
+                message.length > 2000 ? `text-red-600` : 'text-black'
+              } absolute right-0 bottom-0 p-1`}
+            >
               <p className="text-xs">{2000 - message.length}</p>
             </div>
           )}

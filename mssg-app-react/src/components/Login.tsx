@@ -77,11 +77,6 @@ const Login = () => {
     }
   };
 
-  const closeAlert = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    setShowAlert(false);
-  };
-
   const toRegister = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     navigate('/register');
@@ -115,7 +110,7 @@ const Login = () => {
           <h1 className="text-2xl font-semibold mb-2">Login</h1>
           <FailureAlert
             showAlert={showAlert}
-            closeAlert={closeAlert}
+            setShowAlert={setShowAlert}
             errorMessage="Incorrect username or password."
           ></FailureAlert>
           <form

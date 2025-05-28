@@ -34,7 +34,7 @@ const ProfileBar = () => {
   };
 
   return (
-    <div className="flex items-center w-full h-[10vh] bg-inherit pt-0">
+    <div className="flex shrink-0 items-center w-full h-[10vh] min-h-15 bg-inherit pt-0">
       <ProfileModal modalRef={profileModalRef} />
       <div className="flex h-full w-full bg-[#dcdcdc] rounded-lg items-center p-3">
         <div className="flex items-center h-full w-1/2 start">
@@ -44,7 +44,7 @@ const ProfileBar = () => {
             src={loggedInUser?.profilePicture}
             alt="profile picture"
           />
-          <p className="text-black">{loggedInUser?.username}</p>
+          <p className="text-black hidden lg:block">{loggedInUser?.username}</p>
         </div>
         <div className="flex w-1/2 justify-end">
           <button

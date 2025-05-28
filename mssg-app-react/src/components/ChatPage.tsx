@@ -29,7 +29,7 @@ const ChatPage = () => {
   }, []);
 
   return (
-    <div className="flex h-full">
+    <div className="flex w-[100vw] h-full">
       <ChatRoomList
         chatRoomSocket={chatRoomSocket}
         chatRooms={chatRooms}

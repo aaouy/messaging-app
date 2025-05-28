@@ -24,7 +24,6 @@ const ChatRoomList = ({ chatRoomSocket, setChatRooms, chatRooms }: ChatroomListP
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('bruh');
     const storedUser = localStorage.getItem('user');
     if (!storedUser) {
       throw new Error('Logged in user not found!');
@@ -172,15 +171,15 @@ const ChatRoomList = ({ chatRoomSocket, setChatRooms, chatRooms }: ChatroomListP
   };
 
   return (
-    <div className="w-[20vw] h-[100vh]">
-      <div className="flex p-3 h-[9vh] justify-between">
-        <h1 className="text-black text-[24px]">Messages</h1>
+    <div className="w-[10vw] min-w-[100px] flex flex-col sm:w-[10vw] md:w-[10vw] lg:min-w-[300px] lg:w-[20vw] h-[100vh]">
+      <div className="flex p-3 h-[9vh] shrink-0 min-h-15 justify-center lg:justify-between">
+        <h1 className="text-black text-[24px] hidden lg:block">Messages</h1>
         <button onClick={handleAddFriend}>
           <NewMessageIcon className="fill-black w-7 h-7 cursor-pointer hover:scale-[1.1]"></NewMessageIcon>
         </button>
       </div>
       <AddUserModal chatRoomSocket={chatRoomSocket} modalRef={modalRef} chatRooms={chatRooms} />
-      <div className="bg-[#f5f5f5] overflow-scroll h-[80vh] p-3">
+      <div className="bg-[#f5f5f5] overflow-auto flex-grow p-1">
         {chatRooms.map((chatRoom, index) => (
           <ChatRoom
             lastChatRoomref={index === chatRooms.length - 1 ? lastChatRoomRef : null}
@@ -194,7 +193,7 @@ const ChatRoomList = ({ chatRoomSocket, setChatRooms, chatRooms }: ChatroomListP
           />
         ))}
       </div>
-      <ProfileBar />
+      <ProfileBar/>
     </div>
   );
 };

@@ -110,7 +110,7 @@ const Register = () => {
           <h1 className="text-2xl font-semibold mb-2">Register</h1>
           <FailureAlert
             showAlert={showAlert}
-            closeAlert={closeAlert}
+            setShowAlert={setShowAlert}
             errorMessage={errorMessage}
           ></FailureAlert>
           <form

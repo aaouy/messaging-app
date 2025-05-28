@@ -1,6 +1,12 @@
 import { FailureAlertProps } from "../types/components/FailureAlert";
 
-const FailureAlert = ({showAlert, closeAlert, errorMessage }: FailureAlertProps) => {
+const FailureAlert = ({showAlert, setShowAlert, errorMessage}: FailureAlertProps) => {
+
+  const closeAlert = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setShowAlert(false);
+  }
+
   return (
     <div
       className={`${

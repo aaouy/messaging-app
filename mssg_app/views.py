@@ -57,7 +57,9 @@ def logout_user(request):
 def create_chatroom(request):
     try:
         data = json.loads(request.body)
-        users = Profile.objects.filter(username__in=data['users'])    
+        users = Profile.objects.filter(username__in=data['users'])
+        if users.count() != len(data['users']):
+            raise Profile.DoesNotExist
         chatroom = ChatRooms.objects.create()
         chatroom.users.add(*users)
     except Profile.DoesNotExist:
