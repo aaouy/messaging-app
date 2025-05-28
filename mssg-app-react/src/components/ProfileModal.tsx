@@ -1,29 +1,17 @@
 import Cropper from 'react-easy-crop';
 import { Point, Area } from 'react-easy-crop';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { getCookie } from './utils';
 import { ProfileModalProps, User } from '../types';
+import SuccessAlert from './SuccessAlert';
 
-const ProfileModal = ({ modalRef }: ProfileModalProps) => {
+const ProfileModal = ({ loggedInUser, setLoggedInUser, modalRef }: ProfileModalProps) => {
   const [imgSrc, setImgSrc] = useState<string>('');
   const [zoom, setZoom] = useState<number>(1);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  const [loggedInUser, setLoggedInUser] = useState<User>();
-
-  useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem('user');
-      if (!storedUser) {
-        throw new Error('Logged in user not found!');
-      }
-
-      const user = JSON.parse(storedUser);
-      setLoggedInUser(user);
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
 
   const onCropChange = (newCrop: Point) => {
     setCrop(newCrop);
@@ -104,6 +92,8 @@ const ProfileModal = ({ modalRef }: ProfileModalProps) => {
     const croppedBlob = await getCroppedImg(imgSrc, croppedAreaPixels);
     if (!croppedBlob) return;
 
+    setIsLoading(true);
+
     const formData = new FormData();
     formData.append('cropped_image', croppedBlob, 'profile.jpg');
 
@@ -126,24 +116,41 @@ const ProfileModal = ({ modalRef }: ProfileModalProps) => {
       if (!loggedInUser) throw new Error('No user logged in!');
 
       const data = await response.json();
-      loggedInUser.profilePicture = data.profile_pic;
-      localStorage.setItem('user', JSON.stringify(loggedInUser));
+      const newProfilePic: string = data.profile_pic;
+      setLoggedInUser((prev: User | undefined) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          profilePicture: newProfilePic,
+        };
+      });
+      localStorage.setItem(
+        'user',
+        JSON.stringify({ ...loggedInUser, profilePicture: newProfilePic })
+      );
     } catch (error: any) {
       console.error(error);
     }
     setImgSrc('');
     modalRef.current?.close();
+    setIsLoading(false);
+    setSuccess(true);
+    setTimeout(() => {
+      setSuccess(false);
+    }, 2000);
   };
 
   return (
+    <>
+    {success ? (<SuccessAlert header='Image Uploaded Successfully' description=''></SuccessAlert>) : (<></>)}
     <dialog
       className="w-[50vw] h-[80vh] border-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
       ref={modalRef}
       onClick={closeModal}
     >
-      <div className="flex flex-col pl-[2%] p-[2%] w-full h-full">
-        <div className="flex w-1/3 h-[10%] justify-evenly items-center">
-          <h3 className="text-black w-1/2">Edit Image</h3>
+      <div className="relative flex flex-col pl-[2%] p-[2%] w-full h-full">
+        <div className="flex items-center w-fit h-[10%]">
+          <h3 className="text-black mr-6">Edit Image</h3>
           <form className="flex items-center justify-between ">
             <label
               className="hover:scale-105 p-1 pl-3 pr-3 rounded-sm bg-black cursor-pointer text-white inline-block"
@@ -189,21 +196,37 @@ const ProfileModal = ({ modalRef }: ProfileModalProps) => {
             />
           )}
         </div>
-        <div className="flex items-center w-full justify-end">
-          <div className="flex w-1/4 items-center justify-between">
-            <button className="cursor-pointer text-black" onClick={handleCloseButton}>
+        <div className='flex justify-end'>
+          <div className="flex w-fit items-center relative right-0 bottom-0 justify-between">
+            <button className="cursor-pointer relative text-black mr-7" onClick={handleCloseButton}>
               Cancel
             </button>
             <button
               onClick={handleApply}
-              className="hover:scale-105 bg-black p-2 pl-4 pr-4 text-white cursor-pointer"
+              className="hover:scale-105 bg-black right-0 p-2 pl-4 pr-4 text-white cursor-pointer"
             >
-              Apply
+              {isLoading ? (
+                <svg className="left-0 animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                    strokeDasharray="32"
+                    strokeDashoffset="32"
+                  ></circle>
+                </svg>
+              ) : (
+                <>Apply</>
+              )}
             </button>
           </div>
         </div>
       </div>
     </dialog>
+    </>
   );
 };
 

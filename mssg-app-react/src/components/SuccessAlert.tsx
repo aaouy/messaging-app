@@ -3,7 +3,7 @@ import { SuccessAlertProps } from "../types/components/SuccessAlert";
 export const SuccessAlert = ({header, description}: SuccessAlertProps) => {
   return (
     <div
-      className="bg-teal-100 fixed left-1/2 -translate-x-1/2 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md"
+      className="bg-teal-100 fixed left-1/2 -translate-x-1/2 top-0 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md"
       role="alert"
     >
       <div className="flex">

@@ -35,7 +35,7 @@ const ProfileBar = () => {
 
   return (
     <div className="flex shrink-0 items-center w-full h-[10vh] min-h-15 bg-inherit pt-0">
-      <ProfileModal modalRef={profileModalRef} />
+      <ProfileModal loggedInUser={loggedInUser} setLoggedInUser={setLoggedInUser} modalRef={profileModalRef} />
       <div className="flex h-full w-full bg-[#dcdcdc] rounded-lg items-center p-3">
         <div className="flex items-center h-full w-1/2 start">
           <img
