@@ -63,7 +63,14 @@ const ChatInput = ({ chatRoomSocket, messageSocket, chatRooms }: ChatInputProps)
     }
   };
 
-  const handleMessageSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault(); // Prevents new line
+      handleMessageSubmit(e); // Triggers form submission
+    }
+  };
+
+  const handleMessageSubmit = async (event: React.FormEvent<HTMLTextAreaElement>) => {
     event.preventDefault();
     if (!selectedChatRoom) return;
 
@@ -164,7 +171,7 @@ const ChatInput = ({ chatRoomSocket, messageSocket, chatRooms }: ChatInputProps)
               ))}
             </div>
           )}
-          <form onSubmit={handleMessageSubmit}>
+          <form>
             <textarea
               className="w-19/20 px-2 max-h-[40vh] overflow-y-scroll content-center outline-none text-[black] resize-none"
               value={message}
@@ -172,6 +179,8 @@ const ChatInput = ({ chatRoomSocket, messageSocket, chatRooms }: ChatInputProps)
               placeholder="Message..."
               onPaste={handleImagePaste}
               ref={textareaRef}
+              onSubmit={handleMessageSubmit}
+              onKeyDown={handleKeyDown}
             />
           </form>
           {showMaxMessageLengthAlert && (

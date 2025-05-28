@@ -1,4 +1,4 @@
-import json, uuid
+import json
 from .models import ChatRooms, Messages, Profile, MessageImages
 from .utils import serialize_user, serialize_chatroom
 from django.views.decorators.http import require_POST, require_GET, require_http_methods
@@ -43,7 +43,7 @@ def login_user(request):
     user = authenticate(request, username=data["username"], password=data["password"])
     if user:
         login(request, user)
-        return JsonResponse({'user': {'id': user.id, 'username': user.username, 'profile_picture': HOST_PREFIX + user.profile_picture.url}}, status=200)
+        return JsonResponse({'user': {'id': user.pk, 'username': user.username, 'profile_picture': HOST_PREFIX + user.profile_picture.url}}, status=200) # type: ignore
     return JsonResponse({"error": "Invalid credentials"}, status=400)
 
 @login_required
@@ -91,7 +91,7 @@ def save_message(request):
     images = request.FILES.getlist('images[]')
     for image in images:
         MessageImages.objects.create(message=message, image=image)
-    return JsonResponse({"type": "message", 'id': message.pk, 'sender': serialize_user(request.user),'content': data.get('content'), 'chat_room': serialize_chatroom(chatroom), 'sent_at': message.sent_at, 'images': [HOST_PREFIX + img.image.url for img in message.images.all()]})
+    return JsonResponse({"type": "message", 'id': message.pk, 'sender': serialize_user(request.user),'content': data.get('content'), 'chat_room': serialize_chatroom(chatroom), 'sent_at': message.sent_at, 'images': [HOST_PREFIX + img.image.url for img in message.images.all()]}) # type: ignore
     
 @login_required
 @require_GET
@@ -111,7 +111,7 @@ def get_chatroom(request, page):
         except PageNotAnInteger:
             chatrooms_page = paginator.page(1)
         except EmptyPage:
-            chatrooms_page = []
+            chatrooms_page = paginator.page(1)
             
         response = {
             'chat_rooms': list(chatrooms_page),
@@ -132,14 +132,14 @@ def get_chatroom_messages(request, chatroom_id, page):
         return HttpResponseNotFound('chatroom not found')
     
     # Latest messages at the front.
-    messages = chatroom.messages.all().order_by('-sent_at') 
+    messages = chatroom.messages.all().order_by('-sent_at')  # type: ignore
     paginator = Paginator(messages, 50)
     try:
         messages_page = paginator.page(page)
     except PageNotAnInteger:
         messages_page = paginator.page(1)
     except EmptyPage:
-        messages_page = [] 
+        messages_page = paginator.page(1) 
 
     # Latest messages at the front.
     chatroom_messages = []
